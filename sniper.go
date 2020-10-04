@@ -197,7 +197,7 @@ func loadSniper(str string) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.0.1░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.0.2░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -238,7 +238,7 @@ func checkUpdate() {
 }
 func checkCode(bodyString string) {
 	_, _ = magenta.Print(time.Now().Format("15:04:05 "))
-	if strings.Contains(bodyString, "This gift has been redeemed already.") {
+	if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") {
 		color.Yellow("[-] Code has been already redeemed")
 	} else if strings.Contains(bodyString, "nitro") {
 		_, _ = green.Println("[+] Code successfully redeemed")
@@ -252,7 +252,8 @@ func checkCode(bodyString string) {
 	} else if strings.Contains(bodyString, "Unknown Gift Code") {
 		_, _ = red.Println("[x] Code was fake or expired")
 	} else {
-		color.Yellow("[-] Could not validate this code.")
+		color.Yellow("[-] Could not validate this code")
+		fmt.Print(bodyString)
 	}
 
 }
@@ -289,7 +290,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		var strRequestURI = []byte("https://discordapp.com/api/v8/entitlements/gift-codes/" + code[2] + "/redeem")
 		req := fasthttp.AcquireRequest()
 		req.Header.SetContentType("application/json")
-		req.Header.Set("authorization", Token)
+		req.Header.Set("Authorization", Token)
 		req.SetBody([]byte(`{"channel_id":` + m.ChannelID + "}"))
 		req.Header.SetMethodBytes(strPost)
 		req.SetRequestURIBytes(strRequestURI)
@@ -309,9 +310,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		_, _ = magenta.Print(time.Now().Format("15:04:05 "))
 		_, _ = green.Print("[-] Sniped code: ")
-		_, _ = red.Print(code[2])
-		_, _ = red.Print(" - Delay: ")
-		_, _ = red.Print(endT)
+		_, _ = green.Print(code[2])
+		_, _ = fmt.Print(" - ")
+		_, _ = yellow.Print("Delay: ")
+		_, _ = yellow.Print(endT)
 		guild, err := s.State.Guild(m.GuildID)
 		if err != nil || guild == nil {
 			guild, err = s.Guild(m.GuildID)
