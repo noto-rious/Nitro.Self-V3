@@ -40,4 +40,4 @@ token3
 https://github.com/Tyrrrz/DiscordChatExporter/wiki/Obtaining-Token-and-Channel-IDs#how-to-get-a-user-token
 
 ### Disclaimer
-This is a self-bot which is against Discord ToS. Use it at your own risks.
+This is a self-bot which is against Discord ToS. Use it at your own risk.
