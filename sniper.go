@@ -286,7 +286,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		startT := time.Now()
-		var strRequestURI = []byte("https://discordapp.com/api/v6/entitlements/gift-codes/" + code[2] + "/redeem")
+		var strRequestURI = []byte("https://discordapp.com/api/v8/entitlements/gift-codes/" + code[2] + "/redeem")
 		req := fasthttp.AcquireRequest()
 		req.Header.SetContentType("application/json")
 		req.Header.Set("authorization", Token)
