@@ -18,7 +18,7 @@ Edit `settings.json`
 {
   "token": "", // Your main token here
   "nitro_max": 2, // Max Nitro codes redeemed before cooldown
-  "cooldown": 24, // in Hour
+  "cooldown": 24, // How many hours to cooldown for.
   "giveaway_sniper": true // Enable giveaway sniping or not.
   "snipe_on_main": true // Enable sniping on the main account or not.
 }
