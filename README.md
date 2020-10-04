@@ -4,7 +4,7 @@
 
 Multi-Account Discord Nitro sniper and Giveaway joiner written in Go.
 
-Main Snipe functionality credit goes to ![@Vedzaa](https://github.com/Vedzaa).
+Main Snipe functionality credit goes to ![@Vedzaa](https://github.com/Vedzaa).  
 Multi-Account threading along with code-caching for dupe protection and a few other nick-nacks are courtesy of me.
 
 It also sends a DM to giveaway host when won.
