@@ -239,7 +239,7 @@ func checkUpdate() {
 func checkCode(bodyString string) {
 	_, _ = magenta.Print(time.Now().Format("15:04:05 "))
 	if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") {
-		color.Yellow("[-] Code has been already redeemed")
+		color.Yellow("[-] Code has already been redeemed")
 	} else if strings.Contains(bodyString, "nitro") {
 		_, _ = green.Println("[+] Code successfully redeemed")
 		NitroSniped++
