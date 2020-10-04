@@ -110,7 +110,7 @@ func ClearCLI() {
 	}
 }
 func init() {
-	appversion = "v3.0.4"
+	appversion = "v3.0.5"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -176,7 +176,7 @@ func timerEnd() {
 	SniperRunning = true
 	NitroSniped = 0
 	_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-	_, _ = higreen.Println("[+] Starting Nitro sniping")
+	_, _ = higreen.Print("[+] Starting Nitro sniping")
 }
 func loadSniper(str string) {
 	dg, err := discordgo.New(str)
@@ -203,14 +203,18 @@ func loadSniper(str string) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.0.4░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.0.5░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
                                             ░                                  
 	`)
 		checkUpdate()
-		color.HiCyan("Sniping Discord Nitro Codes and Giveaways on " + strconv.Itoa(GuildCount) + " Servers with " + strconv.Itoa(intCnt) + " Accounts 🔫\n\n")
+		hicyan.Print("Sniping Discord Nitro Codes and Giveaways on ")
+		hiyellow.Print(strconv.Itoa(GuildCount))
+		hicyan.Print(" Servers with ")
+		hiyellow.Print(strconv.Itoa(intCnt))
+		hicyan.Print(" Accounts 🔫\n\n")
 		_, _ = himagenta.Print(t.Format("15:04:05 "))
 		fmt.Println("[+] Bots are ready")
 		userID = dg.State.User.ID
@@ -244,14 +248,14 @@ func checkUpdate() {
 }
 func checkCode(bodyString string) {
 	_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-	if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") {
+	if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") || strings.Contains(bodyString, "Missing Access") {
 		_, _ = hiyellow.Print("[-] Code has already been redeemed")
 		_, _ = fmt.Print(" - ")
 		_, _ = hiyellow.Print("Delay: ")
 		_, _ = hiyellow.Print(endT)
 		_, _ = hiyellow.Print("\n")
 	} else if strings.Contains(bodyString, "nitro") {
-		_, _ = green.Println("[+] Code successfully redeemed")
+		_, _ = higreen.Print("[+] Code successfully redeemed")
 		_, _ = fmt.Print(" - ")
 		_, _ = hiyellow.Print("Delay: ")
 		_, _ = hiyellow.Print(endT)
@@ -264,12 +268,11 @@ func checkCode(bodyString string) {
 			_, _ = hiyellow.Println("[+] Stopping Nitro sniping for now")
 		}
 	} else if strings.Contains(bodyString, "Unknown Gift Code") {
-		_, _ = hired.Println("[x] Code was fake or expired")
+		_, _ = hired.Print("[x] Code was fake or expired")
 		_, _ = fmt.Print(" - ")
 		_, _ = hiyellow.Print("Delay: ")
 		_, _ = hiyellow.Print(endT)
 		_, _ = hiyellow.Print("\n")
-		fmt.Print(bodyString)
 	} else {
 		_, _ = hiyellow.Print("[-] Could not validate this code")
 		_, _ = fmt.Print(" - ")
@@ -294,7 +297,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 			_, _ = hired.Print("[=] Auto-detected a fake code: ")
 			_, _ = hired.Print(code[2])
-			fmt.Println(" from " + m.Author.String())
+			_, _ = fmt.Print(" from " + m.Author.String() + "\n")
 			return
 		}
 
@@ -305,7 +308,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 			_, _ = hired.Print("[=] Auto-detected a dupe code: ")
 			_, _ = hired.Print(code[2])
-			fmt.Println(" from " + m.Author.String())
+			_, _ = fmt.Print(" from " + m.Author.String() + "\n")
 			return
 		}
 
@@ -322,14 +325,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if err := fasthttp.Do(req, res); err != nil {
 			panic("handle error")
 		}
-
+		endT = time.Since(startT)
 		fasthttp.ReleaseRequest(req)
 
 		body := res.Body()
 
 		bodyString := string(body)
 		fasthttp.ReleaseResponse(res)
-		endT = time.Since(startT)
 
 		_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 		_, _ = higreen.Print("[-] Checking code: ")
@@ -356,7 +358,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		print(" from " + m.Author.String())
-		_, _ = himagenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
+		_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
 		checkCode(bodyString)
 
 	} else if GiveawaySniper && (strings.Contains(strings.ToLower(m.Content), "**giveaway**") || (strings.Contains(strings.ToLower(m.Content), "react with") && strings.Contains(strings.ToLower(m.Content), "giveaway"))) {
@@ -385,7 +387,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 		_, _ = hiyellow.Print("[-] Enter Giveaway ")
-		_, _ = himagenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
+		_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
 		_ = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
 
 	} else if (strings.Contains(strings.ToLower(m.Content), "giveaway") || strings.Contains(strings.ToLower(m.Content), "win") || strings.Contains(strings.ToLower(m.Content), "won")) && strings.Contains(m.Content, userID) {
@@ -412,9 +414,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			_, _ = higreen.Print("[+] Won Giveaway")
 			if len(won) > 1 {
 				_, _ = higreen.Print(": ")
-				_, _ = hicyan.Println(won[1])
+				_, _ = hicyan.Print(won[1])
 			}
-			_, _ = himagenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
+			_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
 
 			return
 		}
@@ -426,7 +428,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			_, _ = higreen.Print(": ")
 			_, _ = hicyan.Print(won[1])
 		}
-		_, _ = himagenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
+		_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
 
 		giveawayHost := reGiveawayHost.FindStringSubmatch(messages[0].Embeds[0].Description)
 		if len(giveawayHost) < 2 {
@@ -447,7 +449,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		host, _ := s.User(giveawayHost[1])
 		_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 		_, _ = higreen.Print("[+] Sent DM to host: ")
-		_, _ = fmt.Println(host.Username + "#" + host.Discriminator)
+		_, _ = fmt.Print(host.Username + "#" + host.Discriminator + "\n")
 	}
 }
 func main() {
