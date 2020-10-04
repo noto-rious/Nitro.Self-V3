@@ -9,8 +9,6 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 
 It also sends a DM to giveaway host when won.
 
-You can now enable or no Giveaway joiner and setup a cooldown of x hours each x nitros applied.
-
 ![Screenshot](screenshot.png)
 
 ### Usage
