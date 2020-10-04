@@ -18,11 +18,16 @@ Edit `settings.json`
 {
   "token": "", // Your main token here
   "nitro_max": 2, // Max Nitro codes redeemed before cooldown
-  "cooldown": 24, // in Hour
+  "cooldown": 24, // How many hours to cooldown for.
   "giveaway_sniper": true // Enable giveaway sniping or not.
   "snipe_on_main": true // Enable sniping on the main account or not.
 }
-
+```
+Edit `tokens.txt`
+```
+token1
+token2
+token3
 ```
 
 ```
@@ -35,4 +40,4 @@ Edit `settings.json`
 https://github.com/Tyrrrz/DiscordChatExporter/wiki/Obtaining-Token-and-Channel-IDs#how-to-get-a-user-token
 
 ### Disclaimer
-This is a self-bot which is against Discord ToS. Use it at your own risks.
+This is a self-bot which is against Discord ToS. Use it at your own risk.
