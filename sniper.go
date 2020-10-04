@@ -197,7 +197,7 @@ func loadSniper(str string) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.0.0░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.0.1░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -241,7 +241,7 @@ func checkCode(bodyString string) {
 	if strings.Contains(bodyString, "This gift has been redeemed already.") {
 		color.Yellow("[-] Code has been already redeemed")
 	} else if strings.Contains(bodyString, "nitro") {
-		_, _ = green.Println("[+] Code applied")
+		_, _ = green.Println("[+] Code successfully redeemed")
 		NitroSniped++
 		if NitroSniped == NitroMax {
 			SniperRunning = false
@@ -250,9 +250,9 @@ func checkCode(bodyString string) {
 			_, _ = yellow.Println("[+] Stopping Nitro sniping for now")
 		}
 	} else if strings.Contains(bodyString, "Unknown Gift Code") {
-		_, _ = red.Println("[x] Invalid Code")
+		_, _ = red.Println("[x] Code was fake or expired")
 	} else {
-		color.Yellow("[-] Cannot check gift validity")
+		color.Yellow("[-] Could not validate this code.")
 	}
 
 }
