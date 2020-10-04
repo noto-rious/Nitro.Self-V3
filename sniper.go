@@ -50,6 +50,7 @@ var (
 	didLoadT          bool
 	intCnt            int
 	appversion        string
+	endT              time.Duration
 )
 
 func readLines(path string) ([]string, error) {
@@ -104,7 +105,7 @@ func ClearCLI() {
 	}
 }
 func init() {
-	appversion = "v3.0.0"
+	appversion = "v3.0.3"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -197,7 +198,7 @@ func loadSniper(str string) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.0.2░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.0.3░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -239,9 +240,17 @@ func checkUpdate() {
 func checkCode(bodyString string) {
 	_, _ = magenta.Print(time.Now().Format("15:04:05 "))
 	if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") {
-		color.Yellow("[-] Code has already been redeemed")
+		_, _ = yellow.Print("[-] Code has already been redeemed")
+		_, _ = fmt.Print(" - ")
+		_, _ = yellow.Print("Delay: ")
+		_, _ = yellow.Print(endT)
+		_, _ = yellow.Print("\n")
 	} else if strings.Contains(bodyString, "nitro") {
 		_, _ = green.Println("[+] Code successfully redeemed")
+		_, _ = fmt.Print(" - ")
+		_, _ = yellow.Print("Delay: ")
+		_, _ = yellow.Print(endT)
+		_, _ = yellow.Print("\n")
 		NitroSniped++
 		if NitroSniped == NitroMax {
 			SniperRunning = false
@@ -251,8 +260,17 @@ func checkCode(bodyString string) {
 		}
 	} else if strings.Contains(bodyString, "Unknown Gift Code") {
 		_, _ = red.Println("[x] Code was fake or expired")
+		_, _ = fmt.Print(" - ")
+		_, _ = yellow.Print("Delay: ")
+		_, _ = yellow.Print(endT)
+		_, _ = yellow.Print("\n")
+		fmt.Print(bodyString)
 	} else {
-		color.Yellow("[-] Could not validate this code")
+		_, _ = yellow.Print("[-] Could not validate this code")
+		_, _ = fmt.Print(" - ")
+		_, _ = yellow.Print("Delay: ")
+		_, _ = yellow.Print(endT)
+		_, _ = yellow.Print("\n")
 		fmt.Print(bodyString)
 	}
 
@@ -306,14 +324,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		bodyString := string(body)
 		fasthttp.ReleaseResponse(res)
-		endT := time.Since(startT)
+		endT = time.Since(startT)
 
 		_, _ = magenta.Print(time.Now().Format("15:04:05 "))
-		_, _ = green.Print("[-] Sniped code: ")
-		_, _ = green.Print(code[2])
-		_, _ = fmt.Print(" - ")
-		_, _ = yellow.Print("Delay: ")
-		_, _ = yellow.Print(endT)
+		_, _ = green.Print("[-] Checking code: ")
+		_, _ = fmt.Print(code[2])
 		guild, err := s.State.Guild(m.GuildID)
 		if err != nil || guild == nil {
 			guild, err = s.Guild(m.GuildID)
