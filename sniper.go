@@ -37,10 +37,15 @@ var (
 	reGiveaway        = regexp.MustCompile("You won the \\*\\*(.*)\\*\\*")
 	reGiveawayMessage = regexp.MustCompile("<https://discordapp.com/channels/(.*)/(.*)/(.*)>")
 	magenta           = color.New(color.FgMagenta)
+	himagenta         = color.New(color.FgHiMagenta)
 	green             = color.New(color.FgGreen)
+	higreen           = color.New(color.FgHiGreen)
 	yellow            = color.New(color.FgYellow)
+	hiyellow          = color.New(color.FgHiYellow)
 	red               = color.New(color.FgRed)
+	hired             = color.New(color.FgHiRed)
 	cyan              = color.New(color.FgCyan)
+	hicyan            = color.New(color.FgHiCyan)
 	strPost           = []byte("POST")
 	strGet            = []byte("GET")
 	_                 = []byte("GET")
@@ -105,7 +110,7 @@ func ClearCLI() {
 	}
 }
 func init() {
-	appversion = "v3.0.3"
+	appversion = "v3.0.4"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -139,7 +144,7 @@ func init() {
 	flag.StringVar(&Token, "t", str, "Token")
 
 	if Token == "put your token here" {
-		red.Print("You haven't properly configured the 'settings.json' file. Please put your Discord authorization token in settings.json using the correct JSON syntax and then run the program again.")
+		hired.Print("You haven't properly configured the 'settings.json' file. Please put your Discord authorization token in settings.json using the correct JSON syntax and then run the program again.")
 		didLoadT = false
 	} else {
 		didLoadT = true
@@ -170,8 +175,8 @@ func init() {
 func timerEnd() {
 	SniperRunning = true
 	NitroSniped = 0
-	_, _ = magenta.Print(time.Now().Format("15:04:05 "))
-	_, _ = green.Println("[+] Starting Nitro sniping")
+	_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+	_, _ = higreen.Println("[+] Starting Nitro sniping")
 }
 func loadSniper(str string) {
 	dg, err := discordgo.New(str)
@@ -192,21 +197,21 @@ func loadSniper(str string) {
 	GuildCount += len(dg.State.Guilds)
 	TComplete++
 	if TComplete == intCnt {
-		color.Green(`	
+		color.HiGreen(`	
  ███▄    █  ██▓▄▄▄█████▓ ██▀███   ▒█████         ██████ ▓█████  ██▓      █████▒
  ██ ▀█   █ ▓██▒▓  ██▒ ▓▒▓██ ▒ ██▒▒██▒  ██▒     ▒██    ▒ ▓█   ▀ ▓██▒    ▓██   ▒ 
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.0.3░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.0.4░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
                                             ░                                  
 	`)
 		checkUpdate()
-		color.Cyan("Sniping Discord Nitro Codes and Giveaways on " + strconv.Itoa(GuildCount) + " Servers with " + strconv.Itoa(intCnt) + " Accounts 🔫\n\n")
-		_, _ = magenta.Print(t.Format("15:04:05 "))
+		color.HiCyan("Sniping Discord Nitro Codes and Giveaways on " + strconv.Itoa(GuildCount) + " Servers with " + strconv.Itoa(intCnt) + " Accounts 🔫\n\n")
+		_, _ = himagenta.Print(t.Format("15:04:05 "))
 		fmt.Println("[+] Bots are ready")
 		userID = dg.State.User.ID
 	}
@@ -234,43 +239,43 @@ func checkUpdate() {
 
 	bodyString := string(body)
 	if appversion != bodyString {
-		red.Println("Looks like you may not be running the most current version. Check https://noto.cf/ for an update!\n")
+		hired.Println("Looks like you may not be running the most current version. Check https://noto.cf/ for an update!\n")
 	}
 }
 func checkCode(bodyString string) {
-	_, _ = magenta.Print(time.Now().Format("15:04:05 "))
+	_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 	if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") {
-		_, _ = yellow.Print("[-] Code has already been redeemed")
+		_, _ = hiyellow.Print("[-] Code has already been redeemed")
 		_, _ = fmt.Print(" - ")
-		_, _ = yellow.Print("Delay: ")
-		_, _ = yellow.Print(endT)
-		_, _ = yellow.Print("\n")
+		_, _ = hiyellow.Print("Delay: ")
+		_, _ = hiyellow.Print(endT)
+		_, _ = hiyellow.Print("\n")
 	} else if strings.Contains(bodyString, "nitro") {
 		_, _ = green.Println("[+] Code successfully redeemed")
 		_, _ = fmt.Print(" - ")
-		_, _ = yellow.Print("Delay: ")
-		_, _ = yellow.Print(endT)
-		_, _ = yellow.Print("\n")
+		_, _ = hiyellow.Print("Delay: ")
+		_, _ = hiyellow.Print(endT)
+		_, _ = hiyellow.Print("\n")
 		NitroSniped++
 		if NitroSniped == NitroMax {
 			SniperRunning = false
 			time.AfterFunc(time.Hour*time.Duration(Cooldown), timerEnd)
-			_, _ = magenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = yellow.Println("[+] Stopping Nitro sniping for now")
+			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+			_, _ = hiyellow.Println("[+] Stopping Nitro sniping for now")
 		}
 	} else if strings.Contains(bodyString, "Unknown Gift Code") {
-		_, _ = red.Println("[x] Code was fake or expired")
+		_, _ = hired.Println("[x] Code was fake or expired")
 		_, _ = fmt.Print(" - ")
-		_, _ = yellow.Print("Delay: ")
-		_, _ = yellow.Print(endT)
-		_, _ = yellow.Print("\n")
+		_, _ = hiyellow.Print("Delay: ")
+		_, _ = hiyellow.Print(endT)
+		_, _ = hiyellow.Print("\n")
 		fmt.Print(bodyString)
 	} else {
-		_, _ = yellow.Print("[-] Could not validate this code")
+		_, _ = hiyellow.Print("[-] Could not validate this code")
 		_, _ = fmt.Print(" - ")
-		_, _ = yellow.Print("Delay: ")
-		_, _ = yellow.Print(endT)
-		_, _ = yellow.Print("\n")
+		_, _ = hiyellow.Print("Delay: ")
+		_, _ = hiyellow.Print(endT)
+		_, _ = hiyellow.Print("\n")
 		fmt.Print(bodyString)
 	}
 
@@ -286,9 +291,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		if len(code[2]) < 16 {
-			_, _ = magenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = red.Print("[=] Auto-detected a fake code: ")
-			_, _ = red.Print(code[2])
+			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+			_, _ = hired.Print("[=] Auto-detected a fake code: ")
+			_, _ = hired.Print(code[2])
 			fmt.Println(" from " + m.Author.String())
 			return
 		}
@@ -297,9 +302,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if found != true {
 			triedC = append(triedC, code[2])
 		} else if found == true {
-			_, _ = magenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = red.Print("[=] Auto-detected a dupe code: ")
-			_, _ = red.Print(code[2])
+			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+			_, _ = hired.Print("[=] Auto-detected a dupe code: ")
+			_, _ = hired.Print(code[2])
 			fmt.Println(" from " + m.Author.String())
 			return
 		}
@@ -326,9 +331,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fasthttp.ReleaseResponse(res)
 		endT = time.Since(startT)
 
-		_, _ = magenta.Print(time.Now().Format("15:04:05 "))
-		_, _ = green.Print("[-] Checking code: ")
-		_, _ = fmt.Print(code[2])
+		_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+		_, _ = higreen.Print("[-] Checking code: ")
+		_, _ = higreen.Print(code[2])
 		guild, err := s.State.Guild(m.GuildID)
 		if err != nil || guild == nil {
 			guild, err = s.Guild(m.GuildID)
@@ -351,7 +356,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		print(" from " + m.Author.String())
-		_, _ = magenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
+		_, _ = himagenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
 		checkCode(bodyString)
 
 	} else if GiveawaySniper && (strings.Contains(strings.ToLower(m.Content), "**giveaway**") || (strings.Contains(strings.ToLower(m.Content), "react with") && strings.Contains(strings.ToLower(m.Content), "giveaway"))) {
@@ -378,9 +383,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				return
 			}
 		}
-		_, _ = magenta.Print(time.Now().Format("15:04:05 "))
-		_, _ = yellow.Print("[-] Enter Giveaway ")
-		_, _ = magenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
+		_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+		_, _ = hiyellow.Print("[-] Enter Giveaway ")
+		_, _ = himagenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
 		_ = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
 
 	} else if (strings.Contains(strings.ToLower(m.Content), "giveaway") || strings.Contains(strings.ToLower(m.Content), "win") || strings.Contains(strings.ToLower(m.Content), "won")) && strings.Contains(m.Content, userID) {
@@ -403,25 +408,25 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 		}
 		if giveawayID == nil {
-			_, _ = magenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = green.Print("[+] Won Giveaway")
+			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+			_, _ = higreen.Print("[+] Won Giveaway")
 			if len(won) > 1 {
-				_, _ = green.Print(": ")
-				_, _ = cyan.Println(won[1])
+				_, _ = higreen.Print(": ")
+				_, _ = hicyan.Println(won[1])
 			}
-			_, _ = magenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
+			_, _ = himagenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
 
 			return
 		}
 		messages, _ := s.ChannelMessages(m.ChannelID, 1, "", "", giveawayID[3])
 
-		_, _ = magenta.Print(time.Now().Format("15:04:05 "))
-		_, _ = green.Print("[+] Won Giveaway")
+		_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+		_, _ = higreen.Print("[+] Won Giveaway")
 		if len(won) > 1 {
-			_, _ = green.Print(": ")
-			_, _ = cyan.Print(won[1])
+			_, _ = higreen.Print(": ")
+			_, _ = hicyan.Print(won[1])
 		}
-		_, _ = magenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
+		_, _ = himagenta.Println(" [" + guild.Name + " > " + channel.Name + "]")
 
 		giveawayHost := reGiveawayHost.FindStringSubmatch(messages[0].Embeds[0].Description)
 		if len(giveawayHost) < 2 {
@@ -440,16 +445,16 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		host, _ := s.User(giveawayHost[1])
-		_, _ = magenta.Print(time.Now().Format("15:04:05 "))
-		_, _ = green.Print("[+] Sent DM to host: ")
+		_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+		_, _ = higreen.Print("[+] Sent DM to host: ")
 		_, _ = fmt.Println(host.Username + "#" + host.Discriminator)
 	}
 }
 func main() {
 	if isWindows() == false {
-		fmt.Printf("\033]0;Nitro.Self V3 - Developed By: Notorious\007")
+		fmt.Printf("\033]0;Nitro.Self v" + appversion + " - Developed By: Notorious\007")
 	} else {
-		cmd := exec.Command("cmd", "/c", "title", "Nitro.Self V3 - Developed By: Notorious")
+		cmd := exec.Command("cmd", "/c", "title", "Nitro.Self v"+appversion+" - Developed By: Notorious")
 		err := cmd.Run()
 		if err != nil {
 			fmt.Println(err.Error())
