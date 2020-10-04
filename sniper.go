@@ -452,9 +452,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 func main() {
 	if isWindows() == false {
-		fmt.Printf("\033]0;Nitro.Self v" + appversion + " - Developed By: Notorious\007")
+		fmt.Printf("\033]0;Nitro.Self " + appversion + " - Developed By: Notorious\007")
 	} else {
-		cmd := exec.Command("cmd", "/c", "title", "Nitro.Self v"+appversion+" - Developed By: Notorious")
+		cmd := exec.Command("cmd", "/c", "title", "Nitro.Self "+appversion+" - Developed By: Notorious")
 		err := cmd.Run()
 		if err != nil {
 			fmt.Println(err.Error())
