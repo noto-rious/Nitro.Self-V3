@@ -35,4 +35,4 @@ Edit `settings.json`
 https://github.com/Tyrrrz/DiscordChatExporter/wiki/Obtaining-Token-and-Channel-IDs#how-to-get-a-user-token
 
 ### Disclaimer
-This can get your account banned if you run multiple instance at the same time and/or claim too much Nitros in a too short amount of time. Use it at your own risks.
+This is a self-bot which is against Discord ToS. Use it at your own risks.
