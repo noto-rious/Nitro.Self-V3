@@ -22,7 +22,12 @@ Edit `settings.json`
   "giveaway_sniper": true // Enable giveaway sniping or not.
   "snipe_on_main": true // Enable sniping on the main account or not.
 }
-
+```
+Edit `tokens.txt`
+```
+token1
+token2
+token3
 ```
 
 ```
