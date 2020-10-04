@@ -13,6 +13,7 @@ import (
 	"regexp"
 	strconv "strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -22,16 +23,16 @@ import (
 )
 
 var (
-	Token             string
-	TComplete         int
-	GuildCount        int
-	NitroMax          int
-	Cooldown          int
-	GiveawaySniper    bool
-	SnipeOnMain       bool
-	NitroSniped       int
-	SniperRunning     bool
-	userID            string
+	Token          string
+	TComplete      int
+	GuildCount     int
+	NitroMax       int
+	Cooldown       int
+	GiveawaySniper bool
+	SnipeOnMain    bool
+	NitroSniped    int
+	SniperRunning  bool
+
 	re                = regexp.MustCompile("(discord.com/gifts/|discordapp.com/gifts/|discord.gift/)([a-zA-Z0-9]+)")
 	_                 = regexp.MustCompile("https://privnote.com/.*")
 	reGiveaway        = regexp.MustCompile("You won the \\*\\*(.*)\\*\\*")
@@ -55,8 +56,16 @@ var (
 	didLoadT          bool
 	intCnt            int
 	appversion        string
+	UserID            string
+	UserN             []string
+	startT            time.Time
 	endT              time.Duration
+	wg                sync.WaitGroup
 )
+
+type Thread struct {
+	i int
+}
 
 func readLines(path string) ([]string, error) {
 	file, err := os.Open(path)
@@ -110,7 +119,7 @@ func ClearCLI() {
 	}
 }
 func init() {
-	appversion = "v3.0.5"
+	appversion = "v3.1.0"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -178,14 +187,14 @@ func timerEnd() {
 	_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 	_, _ = higreen.Print("[+] Starting Nitro sniping")
 }
-func loadSniper(str string) {
+func loadSniper(wg *sync.WaitGroup, str string, id int) {
 	dg, err := discordgo.New(str)
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
 		return
 	}
-
-	dg.AddHandler(messageCreate)
+	e := Thread{id}
+	dg.AddHandler(e.MessageCreate)
 
 	err = dg.Open()
 	if err != nil {
@@ -203,7 +212,7 @@ func loadSniper(str string) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.0.5░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.0░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -217,7 +226,9 @@ func loadSniper(str string) {
 		hicyan.Print(" Accounts 🔫\n\n")
 		_, _ = himagenta.Print(t.Format("15:04:05 "))
 		fmt.Println("[+] Bots are ready")
-		userID = dg.State.User.ID
+		UserID = dg.State.User.ID
+
+		//UserN[id] = dg.State.User.String()
 	}
 
 	sc := make(chan os.Signal, 1)
@@ -225,7 +236,9 @@ func loadSniper(str string) {
 	<-sc
 
 	_ = dg.Close()
+	defer wg.Done()
 }
+
 func checkUpdate() {
 	var strRequestURI = []byte("https://raw.githubusercontent.com/noto-rious/Nitro.Self-V3/master/version.txt")
 	req := fasthttp.AcquireRequest()
@@ -246,170 +259,194 @@ func checkUpdate() {
 		hired.Println("Looks like you may not be running the most current version. Check https://noto.cf/ for an update!\n")
 	}
 }
-func checkCode(bodyString string) {
-	_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-	if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") || strings.Contains(bodyString, "Missing Access") {
-		_, _ = hiyellow.Print("[-] Code has already been redeemed")
-		_, _ = fmt.Print(" - ")
-		_, _ = hiyellow.Print("Delay: ")
-		_, _ = hiyellow.Print(endT)
-		_, _ = hiyellow.Print("\n")
-	} else if strings.Contains(bodyString, "nitro") {
-		_, _ = higreen.Print("[+] Code successfully redeemed")
-		_, _ = fmt.Print(" - ")
-		_, _ = hiyellow.Print("Delay: ")
-		_, _ = hiyellow.Print(endT)
-		_, _ = hiyellow.Print("\n")
-		NitroSniped++
-		if NitroSniped == NitroMax {
-			SniperRunning = false
-			time.AfterFunc(time.Hour*time.Duration(Cooldown), timerEnd)
-			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = hiyellow.Println("[+] Stopping Nitro sniping for now")
-		}
-	} else if strings.Contains(bodyString, "Unknown Gift Code") {
-		_, _ = hired.Print("[x] Code was fake or expired")
-		_, _ = fmt.Print(" - ")
-		_, _ = hiyellow.Print("Delay: ")
-		_, _ = hiyellow.Print(endT)
-		_, _ = hiyellow.Print("\n")
-	} else {
-		_, _ = hiyellow.Print("[-] Could not validate this code")
-		_, _ = fmt.Print(" - ")
-		_, _ = hiyellow.Print("Delay: ")
-		_, _ = hiyellow.Print(endT)
-		_, _ = hiyellow.Print("\n")
-		fmt.Print(bodyString)
-	}
+func redeemCode(theCode string, theChannel string, theAuthor string, theUser string) {
+	ch := make(chan int)
 
+	go func() {
+
+		ch <- 1
+	}()
+	<-ch
 }
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	//do stuff with e.i
+	ch := make(chan int)
 	//fmt.Println(s.State.User.ID)
-	if re.Match([]byte(m.Content)) && SniperRunning {
+	go func() {
+		if re.Match([]byte(m.Content)) && SniperRunning {
 
-		code := re.FindStringSubmatch(m.Content)
+			code := re.FindStringSubmatch(m.Content)
 
-		if len(code) < 2 {
-			return
-		}
+			if len(code[2]) < 2 {
+				return
+			}
 
-		if len(code[2]) < 16 {
+			if len(code[2]) < 16 {
+				//_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+				//_, _ = hired.Print("[=] Auto-detected a fake code: ")
+				//_, _ = hired.Print(code[2])
+				//_, _ = fmt.Println(" from " + m.Author.String())
+				return
+			}
+
+			_, found := Find(triedC, code[2])
+			if found != true {
+				triedC = append(triedC, code[2])
+			} else if found == true {
+				//_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+				//_, _ = hired.Print("[=] Auto-detected a dupe code: ")
+				//_, _ = hired.Print(code[2])
+				//_, _ = fmt.Println(" from " + m.Author.String())
+				return
+			}
+
+			//set a terminal line here to show which account we are using, wh
+			println()
 			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = hired.Print("[=] Auto-detected a fake code: ")
-			_, _ = hired.Print(code[2])
-			_, _ = fmt.Print(" from " + m.Author.String() + "\n")
-			return
-		}
+			_, _ = fmt.Print("(" + s.State.User.String() + ")")
+			//return
+			guild, err := s.State.Guild(m.GuildID)
+			if err != nil || guild == nil {
+				guild, err = s.Guild(m.GuildID)
+				if err != nil {
+					_, _ = fmt.Println(" [DM with " + m.Author.String() + " > " + s.State.User.String() + "]")
+				}
+			}
+			channel, err := s.State.Channel(m.ChannelID)
+			if err != nil || guild == nil {
+				channel, err = s.Channel(m.ChannelID)
+				if err != nil {
+				}
+			} else if guild != nil {
+				_, _ = fmt.Println(" [" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+			}
 
-		_, found := Find(triedC, code[2])
-		if found != true {
-			triedC = append(triedC, code[2])
-		} else if found == true {
+			_, _ = higreen.Print("[-] Checking code: ")
+			_, _ = higreen.Println(code[2])
+
+			startT = time.Now()
+			var strRequestURI = []byte("https://discordapp.com/api/v8/entitlements/gift-codes/" + code[2] + "/redeem")
+			req := fasthttp.AcquireRequest()
+			req.Header.SetContentType("application/json")
+			req.Header.Set("Authorization", Token)
+			req.SetBody([]byte(`{"channel_id":` + m.ChannelID + "}"))
+			req.Header.SetMethodBytes(strPost)
+			req.SetRequestURIBytes(strRequestURI)
+			res := fasthttp.AcquireResponse()
+			//endT = time.Since(startT)
+
+			if err := fasthttp.Do(req, res); err != nil {
+				panic("handle error")
+			}
+			fasthttp.ReleaseRequest(req)
+			endT = time.Since(startT)
+
+			body := res.Body()
+
+			bodyString := string(body)
+			fasthttp.ReleaseResponse(res)
+
+			if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") || strings.Contains(bodyString, "Missing Access") {
+				_, _ = hiyellow.Print("[-] Code has already been redeemed")
+				_, _ = fmt.Print(" - ")
+				_, _ = hiyellow.Print("Delay: ")
+				_, _ = hiyellow.Print(endT)
+				_, _ = hiyellow.Print("\n")
+
+			} else if strings.Contains(bodyString, "nitro") {
+				_, _ = higreen.Print("[+] Code successfully redeemed")
+				_, _ = fmt.Print(" - ")
+				_, _ = hiyellow.Print("Delay: ")
+				_, _ = hiyellow.Print(endT)
+				_, _ = hiyellow.Print("\n")
+				NitroSniped++
+				if NitroSniped == NitroMax {
+					SniperRunning = false
+					time.AfterFunc(time.Hour*time.Duration(Cooldown), timerEnd)
+					_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+					_, _ = hiyellow.Println("[+] Stopping Nitro sniping for now")
+				}
+			} else if strings.Contains(bodyString, "You are being rate limited") {
+				_, _ = hired.Print("[x] You are rate limited")
+				_, _ = fmt.Print(" - ")
+				_, _ = hiyellow.Print("Delay: ")
+				_, _ = hiyellow.Print(endT)
+				_, _ = hiyellow.Print("\n")
+			} else if strings.Contains(bodyString, "Unknown Gift Code") {
+				_, _ = hired.Print("[x] Code was fake or expired")
+				_, _ = fmt.Print(" - ")
+				_, _ = hiyellow.Print("Delay: ")
+				_, _ = hiyellow.Print(endT)
+				_, _ = hiyellow.Print("\n")
+			} else {
+				_, _ = hiyellow.Print("[?] Could not validate this code")
+				_, _ = fmt.Print(" - ")
+				_, _ = hiyellow.Print("Delay: ")
+				_, _ = hiyellow.Print(endT)
+				_, _ = hiyellow.Print("\n")
+				fmt.Println(bodyString)
+			}
+			println()
+		} else if GiveawaySniper && (strings.Contains(strings.ToLower(m.Content), "**giveaway**") || (strings.Contains(strings.ToLower(m.Content), "react with") && strings.Contains(strings.ToLower(m.Content), "giveaway"))) {
+			if len(m.Embeds) > 0 && m.Embeds[0].Author != nil {
+				if !strings.Contains(strings.ToLower(m.Embeds[0].Author.Name), "nitro") {
+					return
+				}
+			} else {
+				return
+			}
+			time.Sleep(time.Second)
+			guild, err := s.State.Guild(m.GuildID)
+			if err != nil || guild == nil {
+				guild, err = s.Guild(m.GuildID)
+				if err != nil {
+					return
+				}
+			}
+
+			channel, err := s.State.Channel(m.ChannelID)
+			if err != nil || guild == nil {
+				channel, err = s.Channel(m.ChannelID)
+				if err != nil {
+					return
+				}
+			}
 			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = hired.Print("[=] Auto-detected a dupe code: ")
-			_, _ = hired.Print(code[2])
-			_, _ = fmt.Print(" from " + m.Author.String() + "\n")
-			return
-		}
+			_, _ = hiyellow.Print("[-] Enter Giveaway ")
+			_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
+			_ = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
+		} else if (strings.Contains(strings.ToLower(m.Content), "giveaway") || strings.Contains(strings.ToLower(m.Content), "win") || strings.Contains(strings.ToLower(m.Content), "won")) && strings.Contains(m.Content, s.State.User.ID) {
+			reGiveawayHost := regexp.MustCompile("Hosted by: <@(.*)>")
+			won := reGiveaway.FindStringSubmatch(m.Content)
+			giveawayID := reGiveawayMessage.FindStringSubmatch(m.Content)
+			guild, err := s.State.Guild(m.GuildID)
+			if err != nil || guild == nil {
+				guild, err = s.Guild(m.GuildID)
+				if err != nil {
+					return
+				}
+			}
 
-		startT := time.Now()
-		var strRequestURI = []byte("https://discordapp.com/api/v8/entitlements/gift-codes/" + code[2] + "/redeem")
-		req := fasthttp.AcquireRequest()
-		req.Header.SetContentType("application/json")
-		req.Header.Set("Authorization", Token)
-		req.SetBody([]byte(`{"channel_id":` + m.ChannelID + "}"))
-		req.Header.SetMethodBytes(strPost)
-		req.SetRequestURIBytes(strRequestURI)
-		res := fasthttp.AcquireResponse()
+			channel, err := s.State.Channel(m.ChannelID)
+			if err != nil || guild == nil {
+				channel, err = s.Channel(m.ChannelID)
+				if err != nil {
+					return
+				}
+			}
+			if giveawayID == nil {
+				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+				_, _ = higreen.Print("[+] Won Giveaway")
+				if len(won) > 1 {
+					_, _ = higreen.Print(": ")
+					_, _ = hicyan.Print(won[1])
+				}
+				_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
 
-		if err := fasthttp.Do(req, res); err != nil {
-			panic("handle error")
-		}
-		endT = time.Since(startT)
-		fasthttp.ReleaseRequest(req)
-
-		body := res.Body()
-
-		bodyString := string(body)
-		fasthttp.ReleaseResponse(res)
-
-		_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-		_, _ = higreen.Print("[-] Checking code: ")
-		_, _ = higreen.Print(code[2])
-		guild, err := s.State.Guild(m.GuildID)
-		if err != nil || guild == nil {
-			guild, err = s.Guild(m.GuildID)
-			if err != nil {
-				println()
-				checkCode(bodyString)
 				return
 			}
-		}
+			messages, _ := s.ChannelMessages(m.ChannelID, 1, "", "", giveawayID[3])
 
-		channel, err := s.State.Channel(m.ChannelID)
-		if err != nil || guild == nil {
-			channel, err = s.Channel(m.ChannelID)
-			if err != nil {
-				println()
-
-				checkCode(bodyString)
-				return
-			}
-		}
-
-		print(" from " + m.Author.String())
-		_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
-		checkCode(bodyString)
-
-	} else if GiveawaySniper && (strings.Contains(strings.ToLower(m.Content), "**giveaway**") || (strings.Contains(strings.ToLower(m.Content), "react with") && strings.Contains(strings.ToLower(m.Content), "giveaway"))) {
-		if len(m.Embeds) > 0 && m.Embeds[0].Author != nil {
-			if !strings.Contains(strings.ToLower(m.Embeds[0].Author.Name), "nitro") {
-				return
-			}
-		} else {
-			return
-		}
-		time.Sleep(time.Second)
-		guild, err := s.State.Guild(m.GuildID)
-		if err != nil || guild == nil {
-			guild, err = s.Guild(m.GuildID)
-			if err != nil {
-				return
-			}
-		}
-
-		channel, err := s.State.Channel(m.ChannelID)
-		if err != nil || guild == nil {
-			channel, err = s.Channel(m.ChannelID)
-			if err != nil {
-				return
-			}
-		}
-		_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-		_, _ = hiyellow.Print("[-] Enter Giveaway ")
-		_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
-		_ = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
-
-	} else if (strings.Contains(strings.ToLower(m.Content), "giveaway") || strings.Contains(strings.ToLower(m.Content), "win") || strings.Contains(strings.ToLower(m.Content), "won")) && strings.Contains(m.Content, userID) {
-		reGiveawayHost := regexp.MustCompile("Hosted by: <@(.*)>")
-		won := reGiveaway.FindStringSubmatch(m.Content)
-		giveawayID := reGiveawayMessage.FindStringSubmatch(m.Content)
-		guild, err := s.State.Guild(m.GuildID)
-		if err != nil || guild == nil {
-			guild, err = s.Guild(m.GuildID)
-			if err != nil {
-				return
-			}
-		}
-
-		channel, err := s.State.Channel(m.ChannelID)
-		if err != nil || guild == nil {
-			channel, err = s.Channel(m.ChannelID)
-			if err != nil {
-				return
-			}
-		}
-		if giveawayID == nil {
 			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 			_, _ = higreen.Print("[+] Won Giveaway")
 			if len(won) > 1 {
@@ -418,39 +455,30 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
 
-			return
-		}
-		messages, _ := s.ChannelMessages(m.ChannelID, 1, "", "", giveawayID[3])
+			giveawayHost := reGiveawayHost.FindStringSubmatch(messages[0].Embeds[0].Description)
+			if len(giveawayHost) < 2 {
+				return
+			}
+			hostChannel, err := s.UserChannelCreate(giveawayHost[1])
 
-		_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-		_, _ = higreen.Print("[+] Won Giveaway")
-		if len(won) > 1 {
-			_, _ = higreen.Print(": ")
-			_, _ = hicyan.Print(won[1])
-		}
-		_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
+			if err != nil {
+				return
+			}
+			time.Sleep(time.Second * 9)
 
-		giveawayHost := reGiveawayHost.FindStringSubmatch(messages[0].Embeds[0].Description)
-		if len(giveawayHost) < 2 {
-			return
-		}
-		hostChannel, err := s.UserChannelCreate(giveawayHost[1])
+			_, err = s.ChannelMessageSend(hostChannel.ID, "Hi, I won a giveaway !")
+			if err != nil {
+				return
+			}
 
-		if err != nil {
-			return
+			host, _ := s.User(giveawayHost[1])
+			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+			_, _ = higreen.Print("[+] Sent DM to host: ")
+			_, _ = fmt.Print(host.Username + "#" + host.Discriminator + "\n")
 		}
-		time.Sleep(time.Second * 9)
-
-		_, err = s.ChannelMessageSend(hostChannel.ID, "Hi, I won a giveaway !")
-		if err != nil {
-			return
-		}
-
-		host, _ := s.User(giveawayHost[1])
-		_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-		_, _ = higreen.Print("[+] Sent DM to host: ")
-		_, _ = fmt.Print(host.Username + "#" + host.Discriminator + "\n")
-	}
+		ch <- 1
+	}()
+	<-ch
 }
 func main() {
 	if isWindows() == false {
@@ -470,15 +498,22 @@ func main() {
 		}
 
 		// Calling Goroutine
+		wg.Add(intCnt)
+
+		intID := 1
+		if SnipeOnMain {
+			go loadSniper(&wg, Token, intID)
+			ClearCLI()
+		}
+
 		for _, line := range Tokens {
-			go loadSniper(line)
+			intID++
+			go loadSniper(&wg, line, intID)
+			ClearCLI()
 		}
 
 		// Calling normal function
-		if SnipeOnMain {
-			loadSniper(Token)
-			ClearCLI()
-		}
+		wg.Wait()
 	} else {
 		duration := time.Duration(30) * time.Second
 		time.Sleep(duration)
