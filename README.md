@@ -10,7 +10,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 Features cooldown settings, and an optional giveway joiner.  
 It also sends a DM to the giveaway host when won(also optional).  
 
-More features comming soon, like webhook support and a custom DM message with variable support.
+Might look into adding webhook support later.
 
 ![Screenshot](screenshot.png)
 
