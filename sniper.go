@@ -119,7 +119,7 @@ func ClearCLI() {
 	}
 }
 func init() {
-	appversion = "v3.1.2"
+	appversion = "v3.1.3"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -212,7 +212,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.2░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.3░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -322,7 +322,8 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			}
 
 			_, _ = higreen.Print("[-] Checking code: ")
-			_, _ = higreen.Println(code[2])
+			_, _ = higreen.Print(code[2])
+			_, _ = higreen.Println("...")
 
 			startT = time.Now()
 			var strRequestURI = []byte("https://discordapp.com/api/v8/entitlements/gift-codes/" + code[2] + "/redeem")
@@ -347,14 +348,14 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			fasthttp.ReleaseResponse(res)
 
 			if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") || strings.Contains(bodyString, "Missing Access") {
-				_, _ = hiyellow.Print("[-] Code has already been redeemed")
+				_, _ = hiyellow.Print("[-] Code has already been redeemed.")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Print(endT)
 				_, _ = hiyellow.Print("\n")
 
 			} else if strings.Contains(bodyString, "nitro") {
-				_, _ = higreen.Print("[+] Code successfully redeemed")
+				_, _ = higreen.Print("[+] Code successfully redeemed!!!")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Print(endT)
@@ -367,19 +368,19 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 					_, _ = hiyellow.Println("[+] Stopping Nitro sniping for now")
 				}
 			} else if strings.Contains(bodyString, "You are being rate limited") {
-				_, _ = hired.Print("[x] You are rate limited")
+				_, _ = hired.Print("[x] You are rate limited.")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Print(endT)
 				_, _ = hiyellow.Print("\n")
 			} else if strings.Contains(bodyString, "Unknown Gift Code") {
-				_, _ = hired.Print("[x] Code was fake or expired")
+				_, _ = hired.Print("[x] Code was fake or expired.")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Print(endT)
 				_, _ = hiyellow.Print("\n")
 			} else {
-				_, _ = hiyellow.Print("[?] Could not validate this code")
+				_, _ = hiyellow.Print("[?] Could not validate this code.")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Print(endT)
@@ -454,8 +455,8 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 					_, _ = higreen.Print("[+] Winner Winner, Chicken Dinner, You won the ")
 					_, _ = hicyan.Print(won[1])
 					_, _ = higreen.Println(" Giveaway!!!")
-					return
 				}
+				return
 			}
 			messages, _ := s.ChannelMessages(m.ChannelID, 1, "", "", giveawayID[3])
 
