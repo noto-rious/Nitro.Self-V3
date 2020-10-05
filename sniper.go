@@ -119,7 +119,7 @@ func ClearCLI() {
 	}
 }
 func init() {
-	appversion = "v3.1.0"
+	appversion = "v3.1.1"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -212,20 +212,21 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.0░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.1░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
                                             ░                                  
 	`)
 		checkUpdate()
+		himagenta.Print(t.Format("15:04:05 "))
 		hicyan.Print("Sniping Discord Nitro Codes and Giveaways on ")
 		hiyellow.Print(strconv.Itoa(GuildCount))
 		hicyan.Print(" Servers with ")
 		hiyellow.Print(strconv.Itoa(intCnt))
-		hicyan.Print(" Accounts 🔫\n\n")
-		_, _ = himagenta.Print(t.Format("15:04:05 "))
-		fmt.Println("[+] Bots are ready")
+		hicyan.Println(" Accounts 🔫")
+		//_, _ = himagenta.Print(t.Format("15:04:05 "))
+		//higreen.Println("[+] If we're lucky you'll get Nitro on " + ) need to setup a way to detect main user here.
 		UserID = dg.State.User.ID
 
 		//UserN[id] = dg.State.User.String()
@@ -386,7 +387,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = hiyellow.Print("\n")
 				fmt.Println(bodyString)
 			}
-			println()
+			//println()
 		} else if GiveawaySniper && (strings.Contains(strings.ToLower(m.Content), "**giveaway**") || (strings.Contains(strings.ToLower(m.Content), "react with") && strings.Contains(strings.ToLower(m.Content), "giveaway"))) {
 			if len(m.Embeds) > 0 && m.Embeds[0].Author != nil {
 				if !strings.Contains(strings.ToLower(m.Embeds[0].Author.Name), "nitro") {
