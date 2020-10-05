@@ -119,7 +119,7 @@ func ClearCLI() {
 	}
 }
 func init() {
-	appversion = "v3.1.1"
+	appversion = "v3.1.2"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -212,7 +212,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.1░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.2░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -301,16 +301,15 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				return
 			}
 
-			//set a terminal line here to show which account we are using, wh
 			println()
 			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = fmt.Print("(" + s.State.User.String() + ")")
+			_, _ = hicyan.Print("(" + s.State.User.String() + ")")
 			//return
 			guild, err := s.State.Guild(m.GuildID)
 			if err != nil || guild == nil {
 				guild, err = s.Guild(m.GuildID)
 				if err != nil {
-					_, _ = fmt.Println(" [DM with " + m.Author.String() + " > " + s.State.User.String() + "]")
+					_, _ = hiyellow.Println(" [DM with " + m.Author.String() + " > " + s.State.User.String() + "]")
 				}
 			}
 			channel, err := s.State.Channel(m.ChannelID)
@@ -319,7 +318,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				if err != nil {
 				}
 			} else if guild != nil {
-				_, _ = fmt.Println(" [" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+				_, _ = hiyellow.Println(" [" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
 			}
 
 			_, _ = higreen.Print("[-] Checking code: ")
@@ -397,25 +396,36 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				return
 			}
 			time.Sleep(time.Second)
+
 			guild, err := s.State.Guild(m.GuildID)
 			if err != nil || guild == nil {
 				guild, err = s.Guild(m.GuildID)
 				if err != nil {
-					return
+
 				}
 			}
-
 			channel, err := s.State.Channel(m.ChannelID)
 			if err != nil || guild == nil {
 				channel, err = s.Channel(m.ChannelID)
 				if err != nil {
-					return
 				}
+			} else if guild != nil {
 			}
-			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = hiyellow.Print("[-] Enter Giveaway ")
-			_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
-			_ = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
+			err = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
+			time.Sleep(500 * time.Millisecond)
+			if err != nil {
+				println()
+				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+				_, _ = hicyan.Print("(" + s.State.User.String() + ")")
+				_, _ = hiyellow.Println(" [" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+				_, _ = hired.Println("[x] Failed to enter a giveaway :(")
+			} else {
+				println()
+				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+				_, _ = hicyan.Print("(" + s.State.User.String() + ")")
+				_, _ = hiyellow.Println(" [" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+				_, _ = higreen.Println("[+] Entered a Giveaway!")
+			}
 		} else if (strings.Contains(strings.ToLower(m.Content), "giveaway") || strings.Contains(strings.ToLower(m.Content), "win") || strings.Contains(strings.ToLower(m.Content), "won")) && strings.Contains(m.Content, s.State.User.ID) {
 			reGiveawayHost := regexp.MustCompile("Hosted by: <@(.*)>")
 			won := reGiveaway.FindStringSubmatch(m.Content)
@@ -436,25 +446,30 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				}
 			}
 			if giveawayID == nil {
-				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-				_, _ = higreen.Print("[+] Won Giveaway")
 				if len(won) > 1 {
-					_, _ = higreen.Print(": ")
+					println()
+					_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+					_, _ = hicyan.Print("(" + s.State.User.String() + ")")
+					_, _ = hiyellow.Println(" [" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+					_, _ = higreen.Print("[+] Winner Winner, Chicken Dinner, You won the ")
 					_, _ = hicyan.Print(won[1])
+					_, _ = higreen.Println(" Giveaway!!!")
+					return
 				}
-				_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
-
-				return
 			}
 			messages, _ := s.ChannelMessages(m.ChannelID, 1, "", "", giveawayID[3])
 
-			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = higreen.Print("[+] Won Giveaway")
 			if len(won) > 1 {
-				_, _ = higreen.Print(": ")
+				println()
+				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+				_, _ = hicyan.Print("(" + s.State.User.String() + ")")
+				_, _ = hiyellow.Println(" [" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+				_, _ = higreen.Print("[+] Winner Winner, Chicken Dinner, You won the ")
 				_, _ = hicyan.Print(won[1])
+				_, _ = higreen.Println(" Giveaway!!!")
+			} else {
+				return
 			}
-			_, _ = himagenta.Print(" [" + guild.Name + " > " + channel.Name + "]" + "\n")
 
 			giveawayHost := reGiveawayHost.FindStringSubmatch(messages[0].Embeds[0].Description)
 			if len(giveawayHost) < 2 {
@@ -467,7 +482,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			}
 			time.Sleep(time.Second * 9)
 
-			_, err = s.ChannelMessageSend(hostChannel.ID, "Hi, I won a giveaway !")
+			_, err = s.ChannelMessageSend(hostChannel.ID, "hi, i won your giveaway!")
 			if err != nil {
 				return
 			}
@@ -475,9 +490,9 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			host, _ := s.User(giveawayHost[1])
 			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 			_, _ = higreen.Print("[+] Sent DM to host: ")
-			_, _ = fmt.Print(host.Username + "#" + host.Discriminator + "\n")
+			_, _ = hiyellow.Print(host.Username + "#" + host.Discriminator + "\n")
 		}
-		ch <- 1
+		ch <- e.i
 	}()
 	<-ch
 }
