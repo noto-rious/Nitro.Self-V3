@@ -3,5 +3,7 @@
   "nitro_max": 2,
   "cooldown": 24,
   "giveaway_sniper": true,
-  "snipe_on_main": true
+  "snipe_on_main": true,
+  "dm_host": true,
+  "dm_message": "hi, i won your giveaway!"
 }

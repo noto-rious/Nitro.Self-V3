@@ -30,6 +30,8 @@ var (
 	Cooldown       int
 	GiveawaySniper bool
 	SnipeOnMain    bool
+	DMHost         bool
+	DMMsg          string
 	NitroSniped    int
 	SniperRunning  bool
 
@@ -119,7 +121,7 @@ func ClearCLI() {
 	}
 }
 func init() {
-	appversion = "v3.1.4"
+	appversion = "v3.1.5"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -175,6 +177,12 @@ func init() {
 	value4, _ := strconv.ParseBool(str5)
 	flag.BoolVar(&SnipeOnMain, "s", value4, "SnipeOnMain")
 
+	str6 := fmt.Sprintf("%t", m["dm_host"])
+	value5, _ := strconv.ParseBool(str6)
+	flag.BoolVar(&DMHost, "d", value5, "DMHost")
+
+	DMMsg = fmt.Sprintf("%s", m["dm_message"])
+
 	flag.Parse()
 
 	NitroSniped = 0
@@ -212,7 +220,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.4░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.5░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -271,6 +279,7 @@ func redeemCode(theCode string, theChannel string, theAuthor string, theUser str
 }
 func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	//do stuff with e.i
+
 	ch := make(chan int)
 	//fmt.Println(s.State.User.ID)
 	go func() {
@@ -316,7 +325,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			if err != nil || guild == nil {
 				guild, err = s.Guild(m.GuildID)
 				if err != nil {
-					_, _ = hiyellow.Println(" [DM with " + m.Author.String() + " > " + s.State.User.String() + "]")
+					_, _ = hiyellow.Println("[DM with " + m.Author.String() + " > " + s.State.User.String() + "]")
 				}
 			}
 			channel, err := s.State.Channel(m.ChannelID)
@@ -425,13 +434,13 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				println()
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
-				_, _ = hiyellow.Println(" [" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
 				_, _ = hired.Println("[x] Failed to enter a giveaway :(")
 			} else {
 				println()
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
-				_, _ = hiyellow.Println(" [" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
 				_, _ = higreen.Println("[+] Entered a Giveaway!")
 			}
 		} else if (strings.Contains(strings.ToLower(m.Content), "giveaway") || strings.Contains(strings.ToLower(m.Content), "win") || strings.Contains(strings.ToLower(m.Content), "won")) && strings.Contains(m.Content, s.State.User.ID) {
@@ -458,10 +467,10 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 					println()
 					_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 					_, _ = hicyan.Print(s.State.User.String() + " -> ")
-					_, _ = hiyellow.Println(" [" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-					_, _ = higreen.Print("[+] Winner Winner, Chicken Dinner, You won the ")
+					_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+					_, _ = higreen.Print("[+] Winner winner, chicken dinner, You won the ")
 					_, _ = hicyan.Print(won[1])
-					_, _ = higreen.Println(" Giveaway!!!")
+					_, _ = higreen.Println(" giveaway!!!")
 				}
 				return
 			}
@@ -471,10 +480,10 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				println()
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
-				_, _ = hiyellow.Println(" [" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-				_, _ = higreen.Print("[+] Winner Winner, Chicken Dinner, You won the ")
+				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+				_, _ = higreen.Print("[+] Winner winner, Chicken dinner, You won the ")
 				_, _ = hicyan.Print(won[1])
-				_, _ = higreen.Println(" Giveaway!!!")
+				_, _ = higreen.Println(" giveaway!!!")
 			} else {
 				return
 			}
@@ -490,17 +499,20 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			}
 			time.Sleep(time.Second * 9)
 
-			_, err = s.ChannelMessageSend(hostChannel.ID, "hi, i won your giveaway!")
-			if err != nil {
-				return
-			}
+			if DMHost == true {
+				_, err = s.ChannelMessageSend(hostChannel.ID, DMMsg)
+				if err != nil {
+					return
+				}
 
-			host, _ := s.User(giveawayHost[1])
-			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = higreen.Print("[+] ")
-			_, _ = hicyan.Print(s.State.User.String())
-			_, _ = higreen.Print(" sent DM to host: ")
-			_, _ = hiyellow.Print(host.Username + "#" + host.Discriminator + "\n")
+				host, _ := s.User(giveawayHost[1])
+				println()
+				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+				_, _ = higreen.Print("[+] ")
+				_, _ = hicyan.Print(s.State.User.String())
+				_, _ = higreen.Print(" sent DM to host: ")
+				_, _ = hiyellow.Print(host.Username + "#" + host.Discriminator + "\n")
+			}
 		}
 		ch <- e.i
 	}()
