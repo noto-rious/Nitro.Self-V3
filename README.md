@@ -30,9 +30,9 @@ Edit `settings.json`
 ```
 Edit `tokens.txt`
 ```
-NDI4Mjc31DExNzZyNTQ1NTQ2.X
-NzYxORQyMDkwNtU1NjA1PDEz.X
-NzYxODF1OikyNDEyOTE1NzKz.X
+NDI4Mjc31DExNzZyNTQ1NTQ2.X // Token #1
+NzYxORQyMDkwNtU1NjA1PDEz.X // Token #2
+NzYxODF1OikyNDEyOTE1NzKz.X // Token #2 - Add as many as you want
 ```
 
 ```
