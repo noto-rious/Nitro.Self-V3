@@ -8,9 +8,9 @@ Main Snipe functionality credit goes to ![@Vedzaa](https://github.com/Vedzaa).
 Multi-Account threading along with code-caching for dupe protection and a few other nick-nacks are courtesy of me.
 
 ### Features 
-* Supports multiple accounts
-* Cooldown Settings
-* Optional Giveway Joiner
+* Supports multiple accounts.
+* Cooldown settings.
+* Optional giveway joiner.
 * DM host with custom DM message if giveaway won.
 * Fake/dupelicate code detection to avoid being banned.
 
