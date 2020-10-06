@@ -11,7 +11,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 * Supports multiple accounts
 * Cooldown Settings
 * Optional Giveway Joiner
-* DM host if giveaway won with custom DM message
+* DM host with custom DM message if giveaway won.
 * fake/dupelicate code detection to avoid being banned.
 
 
