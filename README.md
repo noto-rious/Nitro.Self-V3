@@ -20,7 +20,6 @@ Might look into adding webhook support later.
 ![Screenshot](screenshot.png)
 
 ### Usage
-
 Edit `settings.json`
 ```
 {
@@ -46,9 +45,9 @@ NzYxODF1OikyNDEyOTE1NzKz.X // Token #2 - Add as many as you want
  go build
  ./Nitro.Self-V3
  ```
- 
+***
 ### How to obtain your token
 https://github.com/Tyrrrz/DiscordChatExporter/wiki/Obtaining-Token-and-Channel-IDs#how-to-get-a-user-token
-
+***
 ### Disclaimer
 This is a self-bot which is against Discord ToS. Use it at your own risk.
