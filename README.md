@@ -36,6 +36,7 @@ NzYxODF1OikyNDEyOTE1NzKz.X // Token #2 - Add as many as you want
 ```
 
 ```
+ go get https://gopkg.in/noto-rious/Nitro.Self-V3.v3
  go mod download
  go build
  ./Nitro.Self-V3
