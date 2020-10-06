@@ -140,7 +140,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.1.6"
+	appversion = "v3.1.7"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -241,7 +241,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.6░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.7░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -450,13 +450,13 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
 				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-				_, _ = hired.Println("[x] Failed to enter a Discord Nitro Giveaway :(")
+				_, _ = hired.Println("[x] Failed to enter a Discord Nitro Giveaway :( ")
 			} else {
 				println()
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
 				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-				_, _ = higreen.Println("[+] Entered a Discord Nitro Giveaway!")
+				_, _ = higreen.Println("[+] Entered a Discord Nitro Giveaway! ")
 			}
 		} else if (strings.Contains(strings.ToLower(m.Content), "giveaway") || strings.Contains(strings.ToLower(m.Content), "win") || strings.Contains(strings.ToLower(m.Content), "won")) && strings.Contains(m.Content, s.State.User.ID) {
 			reGiveawayHost := regexp.MustCompile("Hosted by: <@(.*)>")
@@ -496,10 +496,14 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
 				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-				_, _ = higreen.Print("[+] Winner winner, Chicken dinner, You won the ")
+				_, _ = higreen.Print("[+] WINNER WINNER, CHICKEN DINNER!!! You won the ")
 				_, _ = hicyan.Print(won[1])
 				_, _ = higreen.Println(" giveaway!!!")
 			} else {
+				return
+			}
+
+			if messages[0].Embeds[0] == nil {
 				return
 			}
 
