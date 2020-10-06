@@ -16,6 +16,7 @@ import (
 	"sync"
 	"syscall"
 	"time"
+	"unicode"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/fatih/color"
@@ -120,8 +121,26 @@ func ClearCLI() {
 		c.Run()
 	}
 }
+func isUpper(s string) bool {
+	for _, r := range s {
+		if !unicode.IsUpper(r) && unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func isLower(s string) bool {
+	for _, r := range s {
+		if !unicode.IsLower(r) && unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
+}
 func init() {
-	appversion = "v3.1.5"
+	ClearCLI()
+	appversion = "v3.1.6"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -155,7 +174,7 @@ func init() {
 	flag.StringVar(&Token, "t", str, "Token")
 
 	if Token == "put your token here" {
-		hired.Print("You haven't properly configured the 'settings.json' file. Please put your Discord authorization token in settings.json using the correct JSON syntax and then run the program again.")
+		hired.Println("You haven't properly configured the 'settings.json' file. Please put your Discord authorization token in settings.json using the correct JSON syntax and then run the program again.")
 		didLoadT = false
 	} else {
 		didLoadT = true
@@ -196,12 +215,14 @@ func timerEnd() {
 	_, _ = higreen.Print("[+] Starting Nitro sniping")
 }
 func loadSniper(wg *sync.WaitGroup, str string, id int) {
+
 	dg, err := discordgo.New(str)
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
 		return
 	}
 	e := Thread{id}
+	dg.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/0.0.308 Chrome/78.0.3904.130 Electron/7.3.2 Safari/537.36"
 	dg.AddHandler(e.MessageCreate)
 
 	err = dg.Open()
@@ -220,7 +241,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.5░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.1.6░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -268,15 +289,7 @@ func checkUpdate() {
 		hired.Println("Looks like you may not be running the most current version. Check https://noto.cf/ for an update!\n")
 	}
 }
-func redeemCode(theCode string, theChannel string, theAuthor string, theUser string) {
-	ch := make(chan int)
 
-	go func() {
-
-		ch <- 1
-	}()
-	<-ch
-}
 func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	//do stuff with e.i
 
@@ -316,6 +329,12 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				//_, _ = fmt.Println(" from " + m.Author.String())
 				return
 			}
+			if isLower(code[2]) {
+				return
+			}
+			if isUpper(code[2]) {
+				return
+			}
 
 			println()
 			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
@@ -341,12 +360,16 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			_, _ = higreen.Print(code[2])
 			_, _ = higreen.Println("...")
 
+			payload := map[string]interface{}{"channel_id": m.ChannelID, "payment_source_id": 0}
+			byts, _ := json.Marshal(payload)
+
 			startT = time.Now()
 			var strRequestURI = []byte("https://discordapp.com/api/v8/entitlements/gift-codes/" + code[2] + "/redeem")
 			req := fasthttp.AcquireRequest()
 			req.Header.SetContentType("application/json")
 			req.Header.Set("Authorization", Token)
-			req.SetBody([]byte(`{"channel_id":` + m.ChannelID + "}"))
+			req.Header.SetUserAgent("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/0.0.308 Chrome/78.0.3904.130 Electron/7.3.2 Safari/537.36")
+			req.SetBody(byts)
 			req.Header.SetMethodBytes(strPost)
 			req.SetRequestURIBytes(strRequestURI)
 			res := fasthttp.AcquireResponse()
@@ -367,15 +390,13 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = hiyellow.Print("[-] Code has already been redeemed.")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
-				_, _ = hiyellow.Print(endT)
-				_, _ = hiyellow.Print("\n")
+				_, _ = hiyellow.Println(endT)
 
 			} else if strings.Contains(bodyString, "nitro") {
-				_, _ = higreen.Print("[+] Code successfully redeemed!!!")
+				_, _ = higreen.Print("[+] BOOYOW!!! You just got Nitro!!!")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
-				_, _ = hiyellow.Print(endT)
-				_, _ = hiyellow.Print("\n")
+				_, _ = hiyellow.Println(endT)
 				NitroSniped++
 				if NitroSniped == NitroMax {
 					SniperRunning = false
@@ -387,20 +408,14 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = hired.Print("[x] You are rate limited.")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
-				_, _ = hiyellow.Print(endT)
-				_, _ = hiyellow.Print("\n")
+				_, _ = hiyellow.Println(endT)
 			} else if strings.Contains(bodyString, "Unknown Gift Code") {
 				_, _ = hired.Print("[x] Code was fake or expired.")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
-				_, _ = hiyellow.Print(endT)
-				_, _ = hiyellow.Print("\n")
+				_, _ = hiyellow.Println(endT)
 			} else {
-				_, _ = hiyellow.Print("[?] Could not validate this code.")
-				_, _ = fmt.Print(" - ")
-				_, _ = hiyellow.Print("Delay: ")
-				_, _ = hiyellow.Print(endT)
-				_, _ = hiyellow.Print("\n")
+				_, _ = hiyellow.Println("[?] Unhandled response received:")
 				fmt.Println(bodyString)
 			}
 			//println()
@@ -435,13 +450,13 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
 				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-				_, _ = hired.Println("[x] Failed to enter a giveaway :(")
+				_, _ = hired.Println("[x] Failed to enter a Discord Nitro Giveaway :(")
 			} else {
 				println()
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
 				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-				_, _ = higreen.Println("[+] Entered a Giveaway!")
+				_, _ = higreen.Println("[+] Entered a Discord Nitro Giveaway!")
 			}
 		} else if (strings.Contains(strings.ToLower(m.Content), "giveaway") || strings.Contains(strings.ToLower(m.Content), "win") || strings.Contains(strings.ToLower(m.Content), "won")) && strings.Contains(m.Content, s.State.User.ID) {
 			reGiveawayHost := regexp.MustCompile("Hosted by: <@(.*)>")
@@ -468,7 +483,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 					_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 					_, _ = hicyan.Print(s.State.User.String() + " -> ")
 					_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-					_, _ = higreen.Print("[+] Winner winner, chicken dinner, You won the ")
+					_, _ = higreen.Print("[+] WINNER WINNER, CHICKEN DINNER!!! You won the ")
 					_, _ = hicyan.Print(won[1])
 					_, _ = higreen.Println(" giveaway!!!")
 				}
