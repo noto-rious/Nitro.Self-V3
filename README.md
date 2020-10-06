@@ -10,7 +10,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 Features cooldown settings, and an optional giveway joiner.  
 It also sends a DM to the giveaway host when won(also optional).  
 
-More features comming soon, like webhook support and a custom DM message with variable support.
+Might look into adding webhook support later.
 
 ![Screenshot](screenshot.png)
 
@@ -30,12 +30,13 @@ Edit `settings.json`
 ```
 Edit `tokens.txt`
 ```
-token1
-token2
-token3
+NDI4Mjc31DExNzZyNTQ1NTQ2.X // Token #1
+NzYxORQyMDkwNtU1NjA1PDEz.X // Token #2
+NzYxODF1OikyNDEyOTE1NzKz.X // Token #2 - Add as many as you want
 ```
 
 ```
+ go get https://gopkg.in/noto-rious/Nitro.Self-V3.v3
  go mod download
  go build
  ./Nitro.Self-V3
