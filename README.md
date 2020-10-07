@@ -30,7 +30,7 @@ Edit `settings.json`
   "cooldown": 24, // How many hours to cooldown for.
   "giveaway_sniper": true, // Enable giveaway sniping or not.
   "snipe_on_main": true, // Enable sniping on the main account or not.
-  "dm_host": true, // Enable the option to DM the giveaway host if you win.
+  "dm_host": true, // Enable or Disable the option to DM the giveaway host if you win.
   "dm_message": "hi, i won your giveaway!" // Custom DM Message.
 }
 ```
