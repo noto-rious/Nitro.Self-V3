@@ -64,6 +64,7 @@ var (
 	startT            time.Time
 	endT              time.Duration
 	wg                sync.WaitGroup
+	wHookURL          string
 )
 
 type Thread struct {
@@ -316,6 +317,9 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				//_, _ = hired.Print("[=] Auto-detected a fake code: ")
 				//_, _ = hired.Print(code[2])
 				//_, _ = fmt.Println(" from " + m.Author.String())
+				return
+			}
+			if len(code[2]) > 24 {
 				return
 			}
 
