@@ -2,7 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/v/release/noto-rious/Nitro.Self-V3)](https://github.com/noto-rious/Nitro.Self-V3/releases)
 
-Multi-Account Discord Nitro sniper and Giveaway joiner written in Go.
+Multi-Account Discord Nitro sniper and Giveaway joiner written in Go 1.15.2.
 
 Main Snipe functionality credit goes to <a href="https://github.com/Vedzaa">@Vedzaa</a>.  
 Multi-Account threading along with code-caching for dupe protection and a few other nick-nacks are courtesy of me.
