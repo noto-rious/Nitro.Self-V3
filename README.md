@@ -9,6 +9,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 
 ### Features 
 * Supports multiple accounts.
+* Redeems all codes on the main account.
 * Cooldown settings.
 * Optional Nitro Giveway joiner.
 * DM host with custom DM message if giveaway won.
