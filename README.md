@@ -25,7 +25,7 @@ Might look into adding webhook support later.
 Edit `settings.json`
 ```
 {
-  "token": "", // Your main token here
+  "token": "X", // Replace X with your main token.
   "nitro_max": 2, // Maximum Nitro code redeems allowed before cooldown
   "cooldown": 24, // How many hours to cooldown for.
   "giveaway_sniper": true, // Enable(true) or Disable(false) giveaway sniping or not.
