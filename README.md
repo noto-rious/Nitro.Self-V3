@@ -1,6 +1,6 @@
 # Nitro.Self V3
 
-[![GitHub release](https://img.shields.io/github/v/release/noto-rious/Nitro.Self-V3)](https://github.com/noto-rious/Nitro.Self-V3/releases)
+[![GitHub release](https://img.shields.io/github/v/release/noto-rious/Nitro.Self-V3?style=plastic)](https://github.com/noto-rious/Nitro.Self-V3/releases) ![GitHub All Releases](https://img.shields.io/github/downloads/noto-rious/Nitro.Self-V3/total?style=plastic)
 
 Multi-Account Discord Nitro sniper and Giveaway joiner written in Go 1.15.2.
 
@@ -10,7 +10,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 ### Features 
 * Supports multiple accounts.
 * Redeems all codes on the main account.
-* Cooldown settings.
+* Cooldown for # hour(s) after redeeming # nitro code(s).
 * Optional Nitro Giveway joiner.
 * DM host with custom DM message if giveaway won.
 * Removes some code obfuscation.
@@ -25,7 +25,7 @@ Might look into adding webhook support later.
 Edit `settings.json`
 ```
 {
-  "token": "", // Your main token here
+  "token": "X", // Replace X with your main token.
   "nitro_max": 2, // Maximum Nitro code redeems allowed before cooldown
   "cooldown": 24, // How many hours to cooldown for.
   "giveaway_sniper": true, // Enable(true) or Disable(false) giveaway sniping or not.
