@@ -21,7 +21,7 @@ Might look into adding webhook support later.
 
 ![Screenshot](screenshot.png)
 
-### Usage
+### Configure
 Edit `settings.json`
 ```
 {
