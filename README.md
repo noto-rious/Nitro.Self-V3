@@ -38,7 +38,7 @@ Edit `settings.json`
   "dm_host": true,                         // Enable(true) or Disable(false) the option to DM the giveaway host if you win.
   "dm_message": "hi, i won your giveaway!" // Custom DM Message.
   "webook_url": "",                        // this is optional, if you're not sure what goes here then you don't need it.
-  "webook_ping_id": "",                    // this is also optional.
+  "webook_ping_id": "",                    // this is also optional, this value would be your numerical developer user id.
   "report_fails_to_webook": false          // you can set this to true if you want to webhook log failed events.
 }
 ```
