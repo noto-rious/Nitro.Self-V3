@@ -16,7 +16,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 * Removes some code obfuscation.
 * Fake/duplicate code detection to avoid being banned.
 * Webhook with extended features like Ping User and report failed codes.
-* Webhook returns color based on success or failure
+* Webhook returns color based on success or failure(green/red)
 
 ![Screenshot](screenshot.png)
 
