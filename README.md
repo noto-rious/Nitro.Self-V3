@@ -17,9 +17,6 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 * Fake/duplicate code detection to avoid being banned.
 * Webhook with optional support for fake/invalid responses and a ping user setting.
 
-
-Might look into adding webhook support later.
-
 ![Screenshot](screenshot.png)
 
 ### Configure
