@@ -1,6 +1,6 @@
 # Nitro.Self V3
 
-[![GitHub release](https://img.shields.io/github/v/release/noto-rious/Nitro.Self-V3?style=plastic)](https://github.com/noto-rious/Nitro.Self-V3/releases) ![GitHub All Releases](https://img.shields.io/github/downloads/noto-rious/Nitro.Self-V3/total?style=plastic)
+[![GitHub release](https://img.shields.io/github/v/release/noto-rious/Nitro.Self-V3?style=plastic)](https://github.com/noto-rious/Nitro.Self-V3/releases) [![GitHub All Releases](https://img.shields.io/github/downloads/noto-rious/Nitro.Self-V3/total?style=plastic)](https://github.com/noto-rious/Nitro.Self-V3/releases)
 
 Multi-Account Discord Nitro sniper and Giveaway joiner written in Go 1.15.2.
 
