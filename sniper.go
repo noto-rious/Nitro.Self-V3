@@ -152,7 +152,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.2.0"
+	appversion = "v3.2.1"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -263,13 +263,13 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.0░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.1░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
                                             ░                                  
 	`)
-
+		checkUpdate()
 		himagenta.Print(t.Format("15:04:05 "))
 		hicyan.Print("Sniping Discord Nitro Codes and Giveaways on ")
 		hiyellow.Print(strconv.Itoa(GuildCount))
@@ -312,26 +312,25 @@ func checkUpdate() {
 	}
 }
 func sWebhook(URL string, User string, avatarURL string, codeMsg string, failed bool, giveaway bool, botName string, channel *discordgo.Channel, author *discordgo.User, guild *discordgo.Guild) {
-	hook := goWebhook.CreateWebhook()
-	hook.Username = User
-	hook.AvatarURL = avatarURL
 	if URL == "" {
 		return
 	}
+	hook := goWebhook.CreateWebhook()
 	if failed != true {
+		hook.Embeds[0].Color = 8453888
 		if giveaway {
 			hook.AddField("🎉 You won a Nitro Giveaway!!! 🥳", codeMsg, false)
 		} else {
 			hook.AddField("🎉 You just Successfully Sniped Nitro!!! 🥳", codeMsg, false)
 		}
 	} else if reportFail {
+		hook.Embeds[0].Color = 16711680
 		if giveaway {
 			hook.AddField("😞 Nitro Giveaway Entry Failed 😞", codeMsg, false)
 		} else {
 			hook.AddField("😞 Nitro Failed to Redeem 😞", codeMsg, false)
 		}
 	}
-
 	hook.AddField("🤖 Account:", botName, false)
 	if guild != nil {
 		hook.AddField("💬 Server:", guild.Name, false)
@@ -343,6 +342,8 @@ func sWebhook(URL string, User string, avatarURL string, codeMsg string, failed 
 	if len(PingID) > 0 {
 		hook.AddField("📣 Ping User:", "<@!"+PingID+">", false)
 	}
+	hook.Username = User
+	hook.AvatarURL = avatarURL
 	err := hook.SendWebhook(URL)
 	if err != nil {
 		if err.StatusCode == 204 { //204 status is successful webhook post
