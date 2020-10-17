@@ -19,6 +19,13 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 
 ![Screenshot](screenshot.png)
 
+### Download & Build
+```
+ go get https://gopkg.in/noto-rious/Nitro.Self-V3.v3
+ go mod download
+ go build
+ ./Nitro.Self-V3
+ ```
 ### Configure
 Edit `settings.json`
 ```
@@ -41,14 +48,6 @@ NDI4Mjc31DExNzZyNTQ1NTQ2.X // Token #1
 NzYxORQyMDkwNtU1NjA1PDEz.X // Token #2
 NzYxODF1OikyNDEyOTE1NzKz.X // Token #2 - Add as many as you want
 ```
-***
-### Download & Build
-```
- go get https://gopkg.in/noto-rious/Nitro.Self-V3.v3
- go mod download
- go build
- ./Nitro.Self-V3
- ```
 ***
 ### How to obtain your token
 **1.** Press **Ctrl+Shift+I** (⌘⌥I on Mac) on Discord to show developer tools<br/>
