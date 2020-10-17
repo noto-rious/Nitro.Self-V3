@@ -152,7 +152,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.2.1"
+	appversion = "v3.2.2"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -263,7 +263,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.1░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.2░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -315,6 +315,9 @@ func sWebhook(URL string, User string, avatarURL string, codeMsg string, failed 
 	if URL == "" {
 		return
 	}
+	if reportFail == false && failed == true {
+		return
+	}
 	hook := goWebhook.CreateWebhook()
 	if failed != true {
 		hook.Embeds[0].Color = 8453888
@@ -331,6 +334,7 @@ func sWebhook(URL string, User string, avatarURL string, codeMsg string, failed 
 			hook.AddField("😞 Nitro Failed to Redeem 😞", codeMsg, false)
 		}
 	}
+
 	hook.AddField("🤖 Account:", botName, false)
 	if guild != nil {
 		hook.AddField("💬 Server:", guild.Name, false)
@@ -492,7 +496,6 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Println(endT)
-
 				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Fake Code: **"+code[2]+"**\nDelay: **"+endT.String()+"**", true, false, s.State.User.String(), channel, m.Author, guild)
 			} else {
 				_, _ = hiyellow.Println("[?] Unhandled response received:")
@@ -524,7 +527,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			} else if guild != nil {
 			}
 			err = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
-			time.Sleep(500 * time.Millisecond)
+			time.Sleep(1 * time.Second)
 			if err != nil {
 				printWait()
 				isPrinting = true
