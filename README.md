@@ -19,7 +19,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 
 ![Screenshot](screenshot.png)
 
-### Download & Build
+### Download & Build with Go
 ```
  go get https://gopkg.in/noto-rious/Nitro.Self-V3.v3
  go mod download
