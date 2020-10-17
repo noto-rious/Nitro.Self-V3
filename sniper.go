@@ -18,6 +18,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/alexabrahall/goWebhook"
 	"github.com/bwmarrin/discordgo"
 	"github.com/fatih/color"
 	"github.com/valyala/fasthttp"
@@ -36,6 +37,9 @@ var (
 	NitroSniped    int
 	SniperRunning  bool
 	isPrinting     bool
+	reportFail     bool
+	webHURL        string
+	PingID         string
 
 	re                = regexp.MustCompile("(discord.com/gifts/|discordapp.com/gifts/|discord.gift/)([a-zA-Z0-9]+)")
 	_                 = regexp.MustCompile("https://privnote.com/.*")
@@ -148,7 +152,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.1.10"
+	appversion = "v3.2.0"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -180,7 +184,6 @@ func init() {
 
 	str := fmt.Sprintf("%v", m["token"])
 	flag.StringVar(&Token, "t", str, "Token")
-
 	if Token == "put your token here" {
 		hired.Println("You haven't properly configured the 'settings.json' file. Please put your Discord authorization token in settings.json using the correct JSON syntax and then run the program again.")
 		didLoadT = false
@@ -208,7 +211,18 @@ func init() {
 	value5, _ := strconv.ParseBool(str6)
 	flag.BoolVar(&DMHost, "d", value5, "DMHost")
 
-	DMMsg = fmt.Sprintf("%s", m["dm_message"])
+	str7 := fmt.Sprintf("%v", m["dm_message"])
+	flag.StringVar(&DMMsg, "h", str7, "dm_message")
+
+	webHURL = fmt.Sprintf("%v", m["webook_url"])
+	flag.StringVar(&webHURL, "w", webHURL, "webook_url")
+
+	str8 := fmt.Sprintf("%t", m["report_fails_to_webook"])
+	value7, _ := strconv.ParseBool(str8)
+	flag.BoolVar(&reportFail, "r", value7, "reportFail")
+
+	str9 := fmt.Sprintf("%v", m["webook_ping_id"])
+	flag.StringVar(&PingID, "z", str9, "webook_ping_id")
 
 	flag.Parse()
 
@@ -249,13 +263,13 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░v3.1.10░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.0░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
                                             ░                                  
 	`)
-		checkUpdate()
+
 		himagenta.Print(t.Format("15:04:05 "))
 		hicyan.Print("Sniping Discord Nitro Codes and Giveaways on ")
 		hiyellow.Print(strconv.Itoa(GuildCount))
@@ -297,10 +311,51 @@ func checkUpdate() {
 		hired.Println("Looks like you may not be running the most current version. Check https://noto.cf/ns for an update!\n")
 	}
 }
+func sWebhook(URL string, User string, avatarURL string, codeMsg string, failed bool, giveaway bool, botName string, channel *discordgo.Channel, author *discordgo.User, guild *discordgo.Guild) {
+	hook := goWebhook.CreateWebhook()
+	hook.Username = User
+	hook.AvatarURL = avatarURL
+	if URL == "" {
+		return
+	}
+	if failed != true {
+		if giveaway {
+			hook.AddField("🎉 You won a Nitro Giveaway!!! 🥳", codeMsg, false)
+		} else {
+			hook.AddField("🎉 You just Successfully Sniped Nitro!!! 🥳", codeMsg, false)
+		}
+	} else if reportFail {
+		if giveaway {
+			hook.AddField("😞 Nitro Giveaway Entry Failed 😞", codeMsg, false)
+		} else {
+			hook.AddField("😞 Nitro Failed to Redeem 😞", codeMsg, false)
+		}
+	}
+
+	hook.AddField("🤖 Account:", botName, false)
+	if guild != nil {
+		hook.AddField("💬 Server:", guild.Name, false)
+		hook.AddField("📺 Channel:", "<#"+channel.ID+"> | ("+channel.Name+")", false)
+		hook.AddField("🧍 Posted by User:", "<@!"+author.ID+"> | ("+author.String()+")", false)
+	} else {
+		hook.AddField("🧍 DM from User:", "<@!"+author.ID+"> | ("+author.String()+")", false)
+	}
+	if len(PingID) > 0 {
+		hook.AddField("📣 Ping User:", "<@!"+PingID+">", false)
+	}
+	err := hook.SendWebhook(URL)
+	if err != nil {
+		if err.StatusCode == 204 { //204 status is successful webhook post
+			//fmt.Println("Webhook sent")
+		} else {
+			//fmt.Println("Webhook failed")
+			//fmt.Println(err.StatusCode)
+		}
+	}
+}
 
 func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	//do stuff with e.i
-
 	ch := make(chan int)
 	//fmt.Println(s.State.User.ID)
 	go func() {
@@ -404,17 +459,20 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Println(endT)
+				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Your main account needs a payment source.", true, false, s.State.User.String(), channel, m.Author, guild)
 			} else if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") || strings.Contains(bodyString, "Missing Access") {
 				_, _ = hiyellow.Print("[-] Code has already been redeemed.")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Println(endT)
+				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Already redeemed: **"+code[2]+"**\nDelay: **"+endT.String()+"**", true, false, s.State.User.String(), channel, m.Author, guild)
 
 			} else if strings.Contains(bodyString, "nitro") {
 				_, _ = higreen.Print("[+] BOOYOW!!! You just got Nitro!!!")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Println(endT)
+				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Success: **"+code[2]+"**\nDelay: **"+endT.String()+"**", false, false, s.State.User.String(), channel, m.Author, guild)
 				NitroSniped++
 				if NitroSniped == NitroMax {
 					SniperRunning = false
@@ -427,14 +485,18 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Println(endT)
+				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "You are being throttled by Discord.", true, false, s.State.User.String(), channel, m.Author, guild)
 			} else if strings.Contains(bodyString, "Unknown Gift Code") {
 				_, _ = hired.Print("[x] Code was fake or expired.")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Println(endT)
+
+				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Fake Code: **"+code[2]+"**\nDelay: **"+endT.String()+"**", true, false, s.State.User.String(), channel, m.Author, guild)
 			} else {
 				_, _ = hiyellow.Println("[?] Unhandled response received:")
 				fmt.Println(bodyString)
+				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Unknown Response: **"+code[2]+"**", true, false, s.State.User.String(), channel, m.Author, guild)
 			}
 			isPrinting = false
 			//println()
@@ -447,12 +509,10 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				return
 			}
 			time.Sleep(time.Second)
-
 			guild, err := s.State.Guild(m.GuildID)
 			if err != nil || guild == nil {
 				guild, err = s.Guild(m.GuildID)
 				if err != nil {
-
 				}
 			}
 			channel, err := s.State.Channel(m.ChannelID)
@@ -472,6 +532,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
 				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
 				_, _ = hired.Println("[x] Failed to enter a Discord Nitro Giveaway :( ")
+				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Failed to enter a giveaway", true, true, s.State.User.String(), channel, m.Author, guild)
 				isPrinting = false
 			} else {
 				printWait()
@@ -488,10 +549,12 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			won := reGiveaway.FindStringSubmatch(m.Content)
 			giveawayID := reGiveawayMessage.FindStringSubmatch(m.Content)
 			guild, err := s.State.Guild(m.GuildID)
+
 			if err != nil || guild == nil {
 				guild, err = s.Guild(m.GuildID)
 				if err != nil {
 					return
+				} else {
 				}
 			}
 
@@ -500,6 +563,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				channel, err = s.Channel(m.ChannelID)
 				if err != nil {
 					return
+				} else {
 				}
 			}
 			if giveawayID == nil {
@@ -514,6 +578,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 					_, _ = hicyan.Print(won[1])
 					_, _ = higreen.Println(" giveaway!!!")
 					isPrinting = false
+					sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Prize: **"+won[1]+"**", false, true, s.State.User.String(), channel, m.Author, guild)
 				}
 				return
 			}
@@ -530,6 +595,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = hicyan.Print(won[1])
 				_, _ = higreen.Println(" giveaway!!!")
 				isPrinting = false
+				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Prize: **"+won[1]+"**", false, true, s.State.User.String(), channel, m.Author, guild)
 			} else {
 				return
 			}

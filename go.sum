@@ -1,7 +1,11 @@
+github.com/alexabrahall/goWebhook v0.0.0-20200812072358-157135cbcf69 h1:R5VCCxkElhCe+R3MSLXCNdzMi6jyXqgdZClFmhQKdaw=
+github.com/alexabrahall/goWebhook v0.0.0-20200812072358-157135cbcf69/go.mod h1:FV9E0CyQlZffXzF2MsDSHtrdCdqHEXwPBERqHcZA7eE=
 github.com/andybalholm/brotli v1.0.0 h1:7UCwP93aiSfvWpapti8g88vVVGp2qqtGyePsSuDafo4=
 github.com/andybalholm/brotli v1.0.0/go.mod h1:loMXtMfwqflxFJPmdbJO0a3KNoPuLBgiu3qAvBg8x/Y=
 github.com/bwmarrin/discordgo v0.22.0 h1:uBxY1HmlVCsW1IuaPjpCGT6A2DBwRn0nvOguQIxDdFM=
 github.com/bwmarrin/discordgo v0.22.0/go.mod h1:c1WtWUGN6nREDmzIpyTp/iD3VYt4Fpx+bVyfBG7JE+M=
+github.com/ecnepsnai/discord v1.2.0 h1:1hlKKOVpyNpdOuI5/QEGHMNhyCM5fKddyvEsPQk9BMc=
+github.com/ecnepsnai/discord v1.2.0/go.mod h1:oFhY+XzcLUuYSVBCDsupNH9o/t231TADNACDAFv7gac=
 github.com/fatih/color v1.9.0 h1:8xPHl4/q1VyqGIPif1F+1V3Y3lSmrq01EabUW3CoW5s=
 github.com/fatih/color v1.9.0/go.mod h1:eQcE1qtQxscV5RaZvpXrrb8Drkc3/DdQ+uUYCNjL+zU=
 github.com/gorilla/websocket v1.4.0 h1:WDFjx/TMzVgy9VdMMQi2K2Emtwi2QcUQsztZ/zLaH/Q=
