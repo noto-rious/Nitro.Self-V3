@@ -15,6 +15,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 * DM host with custom DM message if giveaway won.
 * Removes some code obfuscation.
 * Fake/duplicate code detection to avoid being banned.
+* Webhook with optional support for fake/invalid responses and a ping user setting.
 
 
 Might look into adding webhook support later.
@@ -25,13 +26,16 @@ Might look into adding webhook support later.
 Edit `settings.json`
 ```
 {
-  "token": "X", // Replace X with your main token.
-  "nitro_max": 2, // Maximum Nitro code redeems allowed before cooldown
-  "cooldown": 24, // How many hours to cooldown for.
-  "giveaway_sniper": true, // Enable(true) or Disable(false) giveaway sniping or not.
-  "snipe_on_main": true, // Enable(true) or Disable(false) sniping on the main account or not.
-  "dm_host": true, // Enable(true) or Disable(false) the option to DM the giveaway host if you win.
+  "token": "X",                            // Replace X with your main token.
+  "nitro_max": 2,                          // Maximum Nitro code redeems allowed before cooldown
+  "cooldown": 24,                          // How many hours to cooldown for.
+  "giveaway_sniper": true,                 // Enable(true) or Disable(false) giveaway sniping or not.
+  "snipe_on_main": true,                   // Enable(true) or Disable(false) sniping on the main account or not.
+  "dm_host": true,                         // Enable(true) or Disable(false) the option to DM the giveaway host if you win.
   "dm_message": "hi, i won your giveaway!" // Custom DM Message.
+  "webook_url": "",                        // this is optional, if you're not sure what goes here then you don't need it.
+  "webook_ping_id": "",                    // this is also optional.
+  "report_fails_to_webook": false          // you can set this to true if you want to webhook log failed events.
 }
 ```
 Edit `tokens.txt`
