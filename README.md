@@ -58,4 +58,4 @@ NzYxODF1OikyNDEyOTE1NzKz.X // Token #2 - Add as many as you want
 **5.** Find **token** at the bottom and copy the value<br/>
 ***
 ### Disclaimer
-This is a self-bot which is against Discord ToS. Use it at your own risk.
+This is a self-bot which goes against the Discord ToS agreement. Use it at your own risk.
