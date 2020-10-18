@@ -119,6 +119,14 @@ func Find(slice []string, val string) (int, bool) {
 	}
 	return -1, false
 }
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
 func isWindows() bool {
 	return os.PathSeparator == '\\' && os.PathListSeparator == ';'
 }
@@ -152,7 +160,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.2.2"
+	appversion = "v3.2.3"
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
@@ -215,14 +223,14 @@ func init() {
 	flag.StringVar(&DMMsg, "h", str7, "dm_message")
 
 	webHURL = fmt.Sprintf("%v", m["webook_url"])
-	flag.StringVar(&webHURL, "w", webHURL, "webook_url")
+	flag.StringVar(&webHURL, "w", webHURL, "webHURL")
 
 	str8 := fmt.Sprintf("%t", m["report_fails_to_webook"])
 	value7, _ := strconv.ParseBool(str8)
 	flag.BoolVar(&reportFail, "r", value7, "reportFail")
 
 	str9 := fmt.Sprintf("%v", m["webook_ping_id"])
-	flag.StringVar(&PingID, "z", str9, "webook_ping_id")
+	flag.StringVar(&PingID, "z", str9, "PingID")
 
 	flag.Parse()
 
@@ -263,7 +271,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.2░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.3░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -308,7 +316,8 @@ func checkUpdate() {
 
 	bodyString := string(body)
 	if appversion != bodyString {
-		hired.Println("Looks like you may not be running the most current version. Check https://noto.cf/ns for an update!\n")
+		hired.Println("Looks like you may not be running the most current version. Check https://noto.cf/ns for an update!")
+		println()
 	}
 }
 func sWebhook(URL string, User string, avatarURL string, codeMsg string, failed bool, giveaway bool, botName string, channel *discordgo.Channel, author *discordgo.User, guild *discordgo.Guild) {
@@ -528,7 +537,14 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			}
 			err = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
 			time.Sleep(1 * time.Second)
-			if err != nil {
+			reUsers, err := s.MessageReactions(m.ChannelID, m.ID, "🎉", 100, "", "")
+			joinedGiveaway := false
+			for _, user := range reUsers {
+				if user.ID == s.State.User.ID {
+					joinedGiveaway = true
+				}
+			}
+			if joinedGiveaway != true {
 				printWait()
 				isPrinting = true
 				println()
@@ -536,6 +552,9 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
 				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
 				_, _ = hired.Println("[x] Failed to enter a Discord Nitro Giveaway :( ")
+				if err != nil {
+					println(err.Error())
+				}
 				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Failed to enter a giveaway", true, true, s.State.User.String(), channel, m.Author, guild)
 				isPrinting = false
 			} else {
@@ -558,7 +577,6 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				guild, err = s.Guild(m.GuildID)
 				if err != nil {
 					return
-				} else {
 				}
 			}
 
@@ -567,7 +585,6 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				channel, err = s.Channel(m.ChannelID)
 				if err != nil {
 					return
-				} else {
 				}
 			}
 			if giveawayID == nil {
@@ -608,9 +625,9 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				return
 			}
 
-			if len(messages[0].Embeds) < 2 {
-				return
-			}
+			//if len(messages[0].Embeds) < 2 {
+			//	return
+			//}
 
 			giveawayHost := reGiveawayHost.FindStringSubmatch(messages[0].Embeds[0].Description)
 			if len(giveawayHost) < 2 {
@@ -619,6 +636,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			hostChannel, err := s.UserChannelCreate(giveawayHost[1])
 
 			if err != nil {
+				println(err.Error())
 				return
 			}
 			time.Sleep(time.Second * 9)
@@ -626,6 +644,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			if DMHost == true {
 				_, err = s.ChannelMessageSend(hostChannel.ID, DMMsg)
 				if err != nil {
+					println(err.Error())
 					return
 				}
 
@@ -637,7 +656,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = higreen.Print("[+] ")
 				_, _ = hicyan.Print(s.State.User.String())
 				_, _ = higreen.Print(" sent DM to host: ")
-				_, _ = hiyellow.Print(host.Username + "#" + host.Discriminator + "\n")
+				_, _ = hiyellow.Print(host.String() + "\n")
 				isPrinting = false
 			}
 		}
