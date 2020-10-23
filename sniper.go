@@ -588,16 +588,31 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			time.Sleep(duration)
 
 			err = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
-			
-			printWait()
-			isPrinting = true
-			println()
-			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-			_, _ = hicyan.Print(s.State.User.String() + " -> ")
-			_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-			_, _ = higreen.Println("[+] Entered a Discord Nitro Giveaway! ")
-			isPrinting = false
-			
+
+			if err != nil {
+				println(err.Error())
+				printWait()
+				isPrinting = true
+				println()
+				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+				_, _ = hicyan.Print(s.State.User.String() + " -> ")
+				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+				_, _ = hired.Println("[x] Failed to enter a Discord Nitro Giveaway :( ")
+				if err != nil {
+					println(err.Error())
+				}
+				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Failed to enter a giveaway", true, true, s.State.User.String(), channel, m.Author, guild)
+				isPrinting = false
+			} else {
+				printWait()
+				isPrinting = true
+				println()
+				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+				_, _ = hicyan.Print(s.State.User.String() + " -> ")
+				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+				_, _ = higreen.Println("[+] Entered a Discord Nitro Giveaway! ")
+				isPrinting = false
+			}
 		} else if (strings.Contains(strings.ToLower(m.Content), "giveaway") || strings.Contains(strings.ToLower(m.Content), "win") || strings.Contains(strings.ToLower(m.Content), "won")) && strings.Contains(m.Content, s.State.User.ID) {
 			reGiveawayHost := regexp.MustCompile("Hosted by: <@(.*)>")
 			won := reGiveaway.FindStringSubmatch(m.Content)
