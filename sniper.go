@@ -17,7 +17,9 @@ import (
 	"syscall"
 	"time"
 	"unicode"
-
+	"math/rand"
+	
+	"github.com/itsTurnip/dishooks"
 	"github.com/alexabrahall/goWebhook"
 	"github.com/bwmarrin/discordgo"
 	"github.com/fatih/color"
@@ -31,6 +33,7 @@ var (
 	NitroMax       int
 	Cooldown       int
 	GiveawaySniper bool
+	SaveCache      bool
 	SnipeOnMain    bool
 	DMHost         bool
 	DMMsg          string
@@ -60,6 +63,7 @@ var (
 	_                 = []byte("GET")
 	Tokens            []string
 	lCnt              int
+	cCnt              int
 	triedC            []string
 	didLoadT          bool
 	intCnt            int
@@ -82,6 +86,14 @@ func printWait() {
 	}
 }
 
+func fileExists(filename string) bool {
+    info, err := os.Stat(filename)
+    if os.IsNotExist(err) {
+        return false
+    }
+    return !info.IsDir()
+}
+
 func readLines(path string) ([]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -96,6 +108,22 @@ func readLines(path string) ([]string, error) {
 		lCnt++
 	}
 	return Tokens, scanner.Err()
+}
+
+func readCodes(path string) ([]string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	cCnt = 0
+	for scanner.Scan() {
+		triedC = append(triedC, scanner.Text())
+		cCnt++
+	}
+	return triedC, scanner.Err()
 }
 
 func writeLines(lines []string, path string) error {
@@ -160,21 +188,22 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.2.3"
-	path, err := os.Getwd()
-	if err != nil {
-		log.Println(err)
+	appversion = "v3.2.4"
+	
+	if _, err := os.Stat("tokens.txt"); err == nil {
+		Tokens, err = readLines("tokens.txt")
+		if err != nil {
+			log.Fatalf("readLines: %s", err)
+		}
+	}
+	
+	if _, err := os.Stat("code_cache.txt"); err == nil {
+		triedC, err = readCodes("code_cache.txt")
+		if err != nil {
+			log.Fatalf("readLines: %s", err)
+		}
 	}
 
-	if isWindows() {
-		path = path + "\\tokens.txt"
-	} else {
-		path = path + "/tokens.txt"
-	}
-	Tokens, err = readLines(path)
-	if err != nil {
-		log.Fatalf("readLines: %s", err)
-	}
 	file, err := ioutil.ReadFile("settings.json")
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Failed read file: %s\n", err)
@@ -232,10 +261,15 @@ func init() {
 	str9 := fmt.Sprintf("%v", m["webook_ping_id"])
 	flag.StringVar(&PingID, "z", str9, "PingID")
 
+	str10 := fmt.Sprintf("%t", m["save_cache"])
+	value9, _ := strconv.ParseBool(str10)
+	flag.BoolVar(&SaveCache, "p", value9, "SaveCache")
+
 	flag.Parse()
 
 	NitroSniped = 0
 	SniperRunning = true
+
 }
 
 func timerEnd() {
@@ -271,7 +305,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.3░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.4░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -284,6 +318,13 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 		hicyan.Print(" Servers with ")
 		hiyellow.Print(strconv.Itoa(intCnt))
 		hicyan.Println(" Accounts 🔫")
+
+		if SaveCache != false {
+			himagenta.Print(t.Format("15:04:05 "))
+			hicyan.Print("Anti-duplicate code cache has been loaded; I will ignore ")
+			hiyellow.Print(strconv.Itoa(cCnt))
+			hicyan.Println(" codes.")
+		}
 		//_, _ = himagenta.Print(t.Format("15:04:05 "))
 		//higreen.Println("[+] If we're lucky you'll get Nitro on " + ) need to setup a way to detect main user here.
 		UserID = dg.State.User.ID
@@ -327,7 +368,9 @@ func sWebhook(URL string, User string, avatarURL string, codeMsg string, failed 
 	if reportFail == false && failed == true {
 		return
 	}
+	
 	hook := goWebhook.CreateWebhook()
+
 	if failed != true {
 		hook.Embeds[0].Color = 8453888
 		if giveaway {
@@ -352,9 +395,6 @@ func sWebhook(URL string, User string, avatarURL string, codeMsg string, failed 
 	} else {
 		hook.AddField("🧍 DM from User:", "<@!"+author.ID+"> | ("+author.String()+")", false)
 	}
-	if len(PingID) > 0 {
-		hook.AddField("📣 Ping User:", "<@!"+PingID+">", false)
-	}
 	hook.Username = User
 	hook.AvatarURL = avatarURL
 	err := hook.SendWebhook(URL)
@@ -365,6 +405,13 @@ func sWebhook(URL string, User string, avatarURL string, codeMsg string, failed 
 			//fmt.Println("Webhook failed")
 			//fmt.Println(err.StatusCode)
 		}
+	}
+	if len(PingID) > 0 {
+		webhook, _ := dishooks.WebhookFromURL(URL)
+		_ = webhook.Get()
+		_, _ = webhook.SendMessage(&dishooks.WebhookMessage{
+			Content: "<@!" + PingID + ">",
+		})
 	}
 }
 
@@ -402,6 +449,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			_, found := Find(triedC, code[2])
 			if found != true {
 				triedC = append(triedC, code[2])
+				writeLines(triedC, "code_cache.txt")
 			} else if found == true {
 				//_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				//_, _ = hired.Print("[=] Auto-detected a dupe code: ")
@@ -535,6 +583,10 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				}
 			} else if guild != nil {
 			}
+			
+			duration := time.Duration(rand.Intn(200-100) + 100) * time.Second
+			time.Sleep(duration)
+
 			err = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
 			time.Sleep(1 * time.Second)
 			reUsers, err := s.MessageReactions(m.ChannelID, m.ID, "🎉", 100, "", "")

@@ -8,5 +8,6 @@
   "dm_message": "hi, i won your giveaway!",
   "webook_url": "",
   "webook_ping_id": "",
-  "report_fails_to_webook": false
+  "report_fails_to_webook": false,
+  "save_cache": true
 }
