@@ -15,7 +15,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 * DM host with custom DM message if giveaway won.
 * Removes some gift-code obfuscation.
 * Fake/duplicate code detection to avoid being banned.
-* Webhook with extended features like Ping User and report failed codes.
+* Webhook with extended features like 'ping user' and 'report failed codes/giveaway entries'.
 * Webhook returns color based on success or failure(green/red)
 
 ![Screenshot](screenshot.png)
