@@ -13,7 +13,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 * Cooldown for # hour(s) after redeeming # nitro code(s).
 * Optional Nitro Giveway joiner.
 * DM host with custom DM message if giveaway won.
-* Removes some code obfuscation.
+* Removes some gift-code obfuscation.
 * Fake/duplicate code detection to avoid being banned.
 * Webhook with extended features like Ping User and report failed codes.
 * Webhook returns color based on success or failure(green/red)
