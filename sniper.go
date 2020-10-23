@@ -598,9 +598,6 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
 				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
 				_, _ = hired.Println("[x] Failed to enter a Discord Nitro Giveaway :( ")
-				if err != nil {
-					println(err.Error())
-				}
 				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Failed to enter a giveaway", true, true, s.State.User.String(), channel, m.Author, guild)
 				isPrinting = false
 			} else {
