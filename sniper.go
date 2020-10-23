@@ -188,7 +188,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.2.4"
+	appversion = "v3.2.5"
 	
 	if _, err := os.Stat("tokens.txt"); err == nil {
 		Tokens, err = readLines("tokens.txt")
@@ -305,7 +305,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.4░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.5░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -588,37 +588,16 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			time.Sleep(duration)
 
 			err = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
-			time.Sleep(1 * time.Second)
-			reUsers, err := s.MessageReactions(m.ChannelID, m.ID, "🎉", 100, "", "")
-			joinedGiveaway := false
-			for _, user := range reUsers {
-				if user.ID == s.State.User.ID {
-					joinedGiveaway = true
-				}
-			}
-			if joinedGiveaway != true {
-				printWait()
-				isPrinting = true
-				println()
-				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-				_, _ = hicyan.Print(s.State.User.String() + " -> ")
-				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-				_, _ = hired.Println("[x] Failed to enter a Discord Nitro Giveaway :( ")
-				if err != nil {
-					println(err.Error())
-				}
-				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Failed to enter a giveaway", true, true, s.State.User.String(), channel, m.Author, guild)
-				isPrinting = false
-			} else {
-				printWait()
-				isPrinting = true
-				println()
-				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-				_, _ = hicyan.Print(s.State.User.String() + " -> ")
-				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-				_, _ = higreen.Println("[+] Entered a Discord Nitro Giveaway! ")
-				isPrinting = false
-			}
+			
+			printWait()
+			isPrinting = true
+			println()
+			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+			_, _ = hicyan.Print(s.State.User.String() + " -> ")
+			_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+			_, _ = higreen.Println("[+] Entered a Discord Nitro Giveaway! ")
+			isPrinting = false
+			
 		} else if (strings.Contains(strings.ToLower(m.Content), "giveaway") || strings.Contains(strings.ToLower(m.Content), "win") || strings.Contains(strings.ToLower(m.Content), "won")) && strings.Contains(m.Content, s.State.User.ID) {
 			reGiveawayHost := regexp.MustCompile("Hosted by: <@(.*)>")
 			won := reGiveaway.FindStringSubmatch(m.Content)
