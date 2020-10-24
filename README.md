@@ -17,7 +17,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 * Removes some gift-code obfuscation.
 * Fake/duplicate code detection to avoid being banned.
 * Webhook support with extended features like 'ping user' and 'report failed codes/giveaway entries'.
-* Webhook returns color based on success or failure(green/red)
+* Webhook returns color based on success or failure (green/red)
 
 ![Screenshot](screenshot.png)
 
