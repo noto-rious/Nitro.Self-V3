@@ -10,7 +10,7 @@ Multi-Account threading along with code-caching for dupe protection and a few ot
 ### Features 
 * Supports multiple accounts.
 * Redeems all codes on the main account.
-* Uses Fast HTTP package for Go (faster than Python).
+* Uses Fast HTTP package for Go (faster than Python requests).
 * Cooldown for # hour(s) after redeeming # nitro code(s).
 * Optional Nitro Giveway joiner.
 * DM host with custom DM message if giveaway won.
