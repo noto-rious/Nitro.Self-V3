@@ -8,7 +8,7 @@ Main Snipe functionality credit goes to <a href="https://github.com/Vedza">@Vedz
 Multi-Account threading along with code-caching for dupe protection and a few other nick-nacks are courtesy of me.
 
 ### Features 
-* Supports multiple accounts.
+* Supports multiple accounts(optional).
 * Redeems all codes on the main account.
 * Uses Fast HTTP package for Go (faster than Python requests).
 * Cooldown for # hour(s) after redeeming # nitro code(s).
