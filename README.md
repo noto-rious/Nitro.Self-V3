@@ -8,15 +8,16 @@ Main Snipe functionality credit goes to <a href="https://github.com/Vedza">@Vedz
 Multi-Account threading along with code-caching for dupe protection and a few other nick-nacks are courtesy of me.
 
 ### Features 
-* Supports multiple accounts.
+* Supports multiple accounts (optional).
 * Redeems all codes on the main account.
+* Uses Fast HTTP package for Go (faster than Python requests).
 * Cooldown for # hour(s) after redeeming # nitro code(s).
 * Optional Nitro Giveway joiner.
 * DM host with custom DM message if giveaway won.
 * Removes some gift-code obfuscation.
 * Fake/duplicate code detection to avoid being banned.
 * Webhook support with extended features like 'ping user' and 'report failed codes/giveaway entries'.
-* Webhook returns color based on success or failure(green/red)
+* Webhook returns color based on success or failure (green/red)
 
 ![Screenshot](screenshot.png)
 
