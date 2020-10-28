@@ -20,7 +20,7 @@ If you need any help or have any suggestions you can chekout my main profile for
 * Fake/duplicate code detection to avoid being banned.
 * Webhook support with extended features like 'ping user' and 'report failed codes/giveaway entries'.
 * Webhook returns color based on success or failure (green/red)
-* Cross-compatible binaries for Linux and Window.
+* Cross-compatible binaries for Linux and Windows.
 
 
 ![Screenshot](screenshot.png)
