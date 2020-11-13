@@ -4,7 +4,7 @@
 
 Multi-Account Discord Nitro sniper and Giveaway joiner written in Go 1.15.2.
 
-Main Snipe functionality credit goes to <a href="https://github.com/Vedza">@Vedza</a>.  
+I have to give <a href="https://github.com/Vedza">@Vedza</a> some credit as I used his nitro sniper as a base.  
 Multi-Account threading along with code-caching for dupe protection and a few other nick-nacks are courtesy of me.
 
 If you need any help or have any suggestions you can chekout my main profile for contact details.
@@ -20,6 +20,8 @@ If you need any help or have any suggestions you can chekout my main profile for
 * Fake/duplicate code detection to avoid being banned.
 * Webhook support with extended features like 'ping user' and 'report failed codes/giveaway entries'.
 * Webhook returns color based on success or failure (green/red)
+* Cross-platform binaries for Linux and Windows.
+
 
 ![Screenshot](screenshot.png)
 
