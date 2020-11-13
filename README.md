@@ -38,6 +38,14 @@ Edit `settings.json`
   "nitro_max": 2,                          // Maximum Nitro code redeems allowed before cooldown
   "cooldown": 24,                          // How many hours to cooldown for.
   "giveaway_sniper": true,                 // Enable(true) or Disable(false) giveaway sniping or not.
+  
+  
+  "giveaway_delay": {
+    "minimum": 60,                         // Configure minimum delay before entering giveaway.
+    "maximum": 120                         // Configure maximum delay before entering giveaway.
+  },
+
+  
   "snipe_on_main": true,                   // Enable(true) or Disable(false) sniping on the main account or not.
   "dm_host": true,                         // Enable(true) or Disable(false) the option to DM the giveaway host if you win.
   "dm_message": "hi, i won your giveaway!" // Custom DM Message.

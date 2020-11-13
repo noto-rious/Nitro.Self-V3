@@ -27,22 +27,42 @@ import (
 )
 
 var (
-	Token          string
-	TComplete      int
-	GuildCount     int
-	NitroMax       int
-	Cooldown       int
-	GiveawaySniper bool
-	SaveCache      bool
-	SnipeOnMain    bool
-	DMHost         bool
-	DMMsg          string
-	NitroSniped    int
-	SniperRunning  bool
-	isPrinting     bool
-	reportFail     bool
-	webHURL        string
-	PingID         string
+	//Token is the main token string.
+	Token              string
+	//TComplete is the total number of login completions.
+	TComplete          int
+	//GuildCount is the total number of guilds all of your accounts are members of.
+	GuildCount         int
+	//NitroMax is the maximum number of allowed successful nitro code redemptions are allowed before cooling down.
+	NitroMax           int
+	//Cooldown is the duration in which to cool down in the event of a cooldown.
+	Cooldown           int
+	//GiveawaySniper is the boolean switch to enable or disable giveaway joiner.
+	GiveawaySniper     bool
+	//SaveCache is the boolean switch to enable or disable permanent code caching.
+	SaveCache          bool
+	//SnipeOnMain is the boolean switch to enable or disable sniper on the main account.
+	SnipeOnMain        bool
+	//DMHost is the boolean switch to enable or disable the DM host if a giveaway is won feature.
+	DMHost             bool
+	//DMMsg is the custom DM message that is sent to the giveaway host in the even a giveaway is won.
+	DMMsg              string
+	//NitroSniped is the current session tally of successful Nitro codes redeemed.
+	NitroSniped        int
+	//SniperRunning is the boolean switch that enables or disables the cooldown.
+	SniperRunning      bool
+	//isPrinting is the boolean switch that prevents stdout from getting congested(multi-thread problems lol).
+	isPrinting         bool
+	//reportFail is the boolean switch that enables or disables webhook notifications for failed events.
+	reportFail         bool
+	//webHURL is the webhook URL string.
+	webHURL            string
+	//PingID is the discord id of the user pinged in the event of a webhook.
+	PingID             string
+	//GiveawayMinDelay is the minimum time in which an account will wait before joining a giveaway.
+	GiveawayMinDelay   float64
+	//GiveawayMaxDelay is the minimum time in which an account will wait before joining a giveaway.
+	GiveawayMaxDelay   float64
 
 	re                = regexp.MustCompile("(discord.com/gifts/|discordapp.com/gifts/|discord.gift/)([a-zA-Z0-9]+)")
 	_                 = regexp.MustCompile("https://privnote.com/.*")
@@ -58,9 +78,11 @@ var (
 	hired             = color.New(color.FgHiRed)
 	cyan              = color.New(color.FgCyan)
 	hicyan            = color.New(color.FgHiCyan)
+	hiblue            = color.New(color.FgHiBlue)
 	strPost           = []byte("POST")
 	strGet            = []byte("GET")
 	_                 = []byte("GET")
+	//Tokens is the list of discord account authorization tokens for the alternate accounts.
 	Tokens            []string
 	lCnt              int
 	cCnt              int
@@ -68,13 +90,15 @@ var (
 	didLoadT          bool
 	intCnt            int
 	appversion        string
+	//UserID is the main discord account's username and descriminator in string form.
 	UserID            string
+	//UserN is just an unused placeholder for possibly a list of connected snipers.
 	UserN             []string
 	startT            time.Time
 	endT              time.Duration
 	wg                sync.WaitGroup
 )
-
+//Thread is a structure for threads, lol.
 type Thread struct {
 	i int
 }
@@ -139,6 +163,7 @@ func writeLines(lines []string, path string) error {
 	}
 	return w.Flush()
 }
+//Find is a function that searches for a string in a slice and returns the index in which it exists.
 func Find(slice []string, val string) (int, bool) {
 	for i, item := range slice {
 		if item == val {
@@ -158,6 +183,7 @@ func stringInSlice(a string, list []string) bool {
 func isWindows() bool {
 	return os.PathSeparator == '\\' && os.PathListSeparator == ';'
 }
+//ClearCLI clears the stdout.
 func ClearCLI() {
 	if isWindows() {
 		cmd := exec.Command("cmd", "/c", "cls")
@@ -188,7 +214,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.2.6"
+	appversion = "v3.2.7"
 	
 	if _, err := os.Stat("tokens.txt"); err == nil {
 		Tokens, err = readLines("tokens.txt")
@@ -218,6 +244,13 @@ func init() {
 	}
 
 	m := f.(map[string]interface{})
+
+	gdelaymap := m["giveaway_delay"]
+	v := gdelaymap.(map[string]interface{})
+
+	GiveawayMinDelay = v["minimum"].(float64)
+	GiveawayMaxDelay = v["maximum"].(float64)
+	
 
 	str := fmt.Sprintf("%v", m["token"])
 	flag.StringVar(&Token, "t", str, "Token")
@@ -251,15 +284,16 @@ func init() {
 	str7 := fmt.Sprintf("%v", m["dm_message"])
 	flag.StringVar(&DMMsg, "h", str7, "dm_message")
 
-	webHURL = fmt.Sprintf("%v", m["webook_url"])
+	webHURL = fmt.Sprintf("%v", m["webhook_url"])
 	flag.StringVar(&webHURL, "w", webHURL, "webHURL")
 
-	str8 := fmt.Sprintf("%t", m["report_fails_to_webook"])
+	str8 := fmt.Sprintf("%t", m["report_fails_to_webhook"])
 	value7, _ := strconv.ParseBool(str8)
 	flag.BoolVar(&reportFail, "r", value7, "reportFail")
 
-	str9 := fmt.Sprintf("%v", m["webook_ping_id"])
+	str9 := fmt.Sprintf("%v", m["webhook_ping_id"])
 	flag.StringVar(&PingID, "z", str9, "PingID")
+	
 
 	str10 := fmt.Sprintf("%t", m["save_cache"])
 	value9, _ := strconv.ParseBool(str10)
@@ -276,7 +310,7 @@ func timerEnd() {
 	SniperRunning = true
 	NitroSniped = 0
 	_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-	_, _ = higreen.Print("[+] Starting Nitro sniping")
+	_, _ = higreen.Print("Starting Nitro sniping")
 }
 func loadSniper(wg *sync.WaitGroup, str string, id int) {
 
@@ -294,10 +328,21 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 		fmt.Println("error opening connection,", err)
 		return
 	}
+	if str == Token {
+		UserID = dg.State.User.String()
+	}
 	ClearCLI()
 	t := time.Now()
-	GuildCount += len(dg.State.Guilds)
-	TComplete++
+
+	if str == Token && SnipeOnMain == false {
+			fmt.Print("i have aids")
+			dg.Logout()
+			dg.Close()
+	} else {
+		GuildCount += len(dg.State.Guilds)
+		TComplete++
+	}
+	
 	if TComplete == intCnt {
 		color.HiGreen(`	
  ███▄    █  ██▓▄▄▄█████▓ ██▀███   ▒█████         ██████ ▓█████  ██▓      █████▒
@@ -305,7 +350,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.6░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.7░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -325,19 +370,25 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 			hiyellow.Print(strconv.Itoa(cCnt))
 			hicyan.Println(" codes.")
 		}
-		//_, _ = himagenta.Print(t.Format("15:04:05 "))
-		//higreen.Println("[+] If we're lucky you'll get Nitro on " + ) need to setup a way to detect main user here.
-		UserID = dg.State.User.ID
+
+		//fmt.Println(User.String())
+		_, _ = himagenta.Print(t.Format("15:04:05 "))
+		_, _ = hicyan.Print("If we're lucky, you'll get Nitro on ")
+		_, _ = hiyellow.Print(UserID)
+		_, _ = hicyan.Println(".")
 
 		//UserN[id] = dg.State.User.String()
 	}
+	if str == Token && SnipeOnMain == false {
+		dg.Close()
+	} else {
+		sc := make(chan os.Signal, 1)
+		signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+		<-sc
 
-	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
-	<-sc
-
-	_ = dg.Close()
-	defer wg.Done()
+		_ = dg.Close()
+		defer wg.Done()
+	}
 }
 
 func checkUpdate() {
@@ -406,7 +457,7 @@ func sWebhook(URL string, User string, avatarURL string, codeMsg string, failed 
 			//fmt.Println(err.StatusCode)
 		}
 	}
-	if len(PingID) > 0 {
+	if PingID != "" {
 		webhook, _ := dishooks.WebhookFromURL(URL)
 		_ = webhook.Get()
 		_, _ = webhook.SendMessage(&dishooks.WebhookMessage{
@@ -414,9 +465,10 @@ func sWebhook(URL string, User string, avatarURL string, codeMsg string, failed 
 		})
 	}
 }
-
+//MessageCreate is the function where all the magic happens, all the sniper accounts bind to this for incoming discord events
 func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	//do stuff with e.i
+
 	ch := make(chan int)
 	//fmt.Println(s.State.User.ID)
 	go func() {
@@ -474,7 +526,9 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			if err != nil || guild == nil {
 				guild, err = s.Guild(m.GuildID)
 				if err != nil {
-					_, _ = hiyellow.Println("[DM with " + m.Author.String() + " > " + s.State.User.String() + "]")
+					_, _ = hiyellow.Print("[DM with " + s.State.User.String() + " > ")
+					_, _ = himagenta.Print(m.Author.String())
+					_, _ = hiyellow.Println("]")
 				}
 			}
 			channel, err := s.State.Channel(m.ChannelID)
@@ -483,7 +537,9 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				if err != nil {
 				}
 			} else if guild != nil {
-				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+				_, _ = hiyellow.Print("[" + guild.Name + " > " + channel.Name + " > ")
+				_, _ = himagenta.Print(m.Author.String())
+				_, _ = hiyellow.Println("]")
 			}
 
 			_, _ = higreen.Print("[-] Checking code: ")
@@ -540,7 +596,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 					SniperRunning = false
 					time.AfterFunc(time.Hour*time.Duration(Cooldown), timerEnd)
 					_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-					_, _ = hiyellow.Println("[+] Stopping Nitro sniping for now")
+					_, _ = hiyellow.Println("Stopping Nitro sniping for now")
 				}
 			} else if strings.Contains(bodyString, "You are being rate limited") {
 				_, _ = hired.Print("[x] You are rate limited.")
@@ -584,7 +640,20 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			} else if guild != nil {
 			}
 			
-			duration := time.Duration(rand.Intn(200-100) + 100) * time.Second
+			duration := time.Duration(rand.Intn(int(GiveawayMaxDelay)-int(GiveawayMinDelay)) + int(GiveawayMinDelay)) * time.Second
+
+			printWait()
+			isPrinting = true
+			println()
+			_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
+			_, _ = hicyan.Print(s.State.User.String() + " -> ")
+			_, _ = hiyellow.Print("[" + guild.Name + " > " + channel.Name + " > ")
+			_, _ = himagenta.Print(m.Author.String())
+			_, _ = hiyellow.Println("]")
+			_, _ = hiyellow.Print("[+] Giveaway found, pausing for ")
+			_, _ = himagenta.Println(duration)
+			isPrinting = false
+
 			time.Sleep(duration)
 
 			err = s.MessageReactionAdd(m.ChannelID, m.ID, "🎉")
@@ -595,7 +664,9 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				println()
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
-				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
+				_, _ = hiyellow.Print("[" + guild.Name + " > " + channel.Name + " > ")
+				_, _ = himagenta.Print(m.Author.String())
+				_, _ = hiyellow.Println("]")
 				_, _ = hired.Println("[x] Failed to enter a Discord Nitro Giveaway :( ")
 				println(err.Error())
 				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Failed to enter a giveaway", true, true, s.State.User.String(), channel, m.Author, guild)
@@ -606,8 +677,10 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				println()
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
-				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-				_, _ = higreen.Println("[+] Entered a Discord Nitro Giveaway! ")
+				_, _ = hiyellow.Print("[" + guild.Name + " > " + channel.Name + " > ")
+				_, _ = himagenta.Print(m.Author.String())
+				_, _ = hiyellow.Println("]")
+				_, _ = higreen.Println("Entered a Discord Nitro Giveaway! ")
 				isPrinting = false
 			}
 		} else if (strings.Contains(strings.ToLower(m.Content), "giveaway") || strings.Contains(strings.ToLower(m.Content), "win") || strings.Contains(strings.ToLower(m.Content), "won")) && strings.Contains(m.Content, s.State.User.ID) {
@@ -637,8 +710,10 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 					println()
 					_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 					_, _ = hicyan.Print(s.State.User.String() + " -> ")
-					_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-					_, _ = higreen.Print("[+] WINNER WINNER, CHICKEN DINNER!!! You won the ")
+					_, _ = hiyellow.Print("[" + guild.Name + " > " + channel.Name + " > ")
+					_, _ = himagenta.Print(m.Author.String())
+					_, _ = hiyellow.Println("]")
+					_, _ = higreen.Print("WINNER WINNER, CHICKEN DINNER!!! You won the ")
 					_, _ = hicyan.Print(won[1])
 					_, _ = higreen.Println(" giveaway!!!")
 					isPrinting = false
@@ -654,8 +729,10 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				println()
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 				_, _ = hicyan.Print(s.State.User.String() + " -> ")
-				_, _ = hiyellow.Println("[" + guild.Name + " > " + channel.Name + " > " + m.Author.String() + "]")
-				_, _ = higreen.Print("[+] WINNER WINNER, CHICKEN DINNER!!! You won the ")
+				_, _ = hiyellow.Print("[" + guild.Name + " > " + channel.Name + " > ")
+				_, _ = himagenta.Print(m.Author.String())
+				_, _ = hiyellow.Println("]")
+				_, _ = higreen.Print("WINNER WINNER, CHICKEN DINNER!!! You won the ")
 				_, _ = hicyan.Print(won[1])
 				_, _ = higreen.Println(" giveaway!!!")
 				isPrinting = false
@@ -696,7 +773,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				isPrinting = true
 				println()
 				_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
-				_, _ = higreen.Print("[+] ")
+				_, _ = higreen.Print("")
 				_, _ = hicyan.Print(s.State.User.String())
 				_, _ = higreen.Print(" sent DM to host: ")
 				_, _ = hiyellow.Print(host.String() + "\n")
@@ -728,10 +805,13 @@ func main() {
 		wg.Add(intCnt)
 
 		intID := 1
-		if SnipeOnMain {
-			go loadSniper(&wg, Token, intID)
-			ClearCLI()
-		}
+
+		//had to deprecate this if statement just for the sake of getting the main tokens username and descriminator.
+		//we close the connection as soon as we get that information.
+		//if SnipeOnMain {
+		go loadSniper(&wg, Token, intID)
+		ClearCLI()
+		//}
 
 		for _, line := range Tokens {
 			intID++

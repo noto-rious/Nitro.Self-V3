@@ -3,11 +3,17 @@
   "nitro_max": 2,
   "cooldown": 24,
   "giveaway_sniper": true,
+
+  "giveaway_delay": {
+    "minimum": 60,
+    "maximum": 120
+  },
+
   "snipe_on_main": true,
   "dm_host": true,
   "dm_message": "hi, i won your giveaway!",
-  "webook_url": "",
-  "webook_ping_id": "",
-  "report_fails_to_webook": false,
+  "webhook_url": "",
+  "webhook_ping_id": "",
+  "report_fails_to_webhook": false,
   "save_cache": true
 }
