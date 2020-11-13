@@ -46,7 +46,6 @@ Edit `settings.json`
     "maximum": 120                         // Configure maximum delay before entering giveaway.
   },
 
-  
   "snipe_on_main": true,                   // Enable(true) or Disable(false) sniping on the main account or not.
   "dm_host": true,                         // Enable(true) or Disable(false) the option to DM the giveaway host if you win.
   "dm_message": "hi, i won your giveaway!" // Custom DM Message.
