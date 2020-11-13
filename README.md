@@ -49,9 +49,9 @@ Edit `settings.json`
   "snipe_on_main": true,                   // Enable(true) or Disable(false) sniping on the main account or not.
   "dm_host": true,                         // Enable(true) or Disable(false) the option to DM the giveaway host if you win.
   "dm_message": "hi, i won your giveaway!" // Custom DM Message.
-  "webhook_url": "",                        // this is optional, if you're not sure what goes here then you don't need it.
-  "webhook_ping_id": "",                    // this is also optional, this value would be your numerical user id(obtained by enabling developer mode in settings).
-  "report_fails_to_webhook": false,         // you can set this to true if you want to webhook log failed events.
+  "webhook_url": "",                       // this is optional, if you're not sure what goes here then you don't need it.
+  "webhook_ping_id": "",                   // this is also optional, this value would be your numerical user id(obtained by enabling developer mode in settings).
+  "report_fails_to_webhook": false,        // you can set this to true if you want to webhook log failed events.
   "save_cache": true                       // Allows for permanent code caching.
 }
 ```
