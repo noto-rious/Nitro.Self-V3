@@ -42,8 +42,8 @@ Edit `settings.json`
   "giveaway_sniper": true,                 // Enable(true) or Disable(false) giveaway sniping or not.
 
   "giveaway_delay": {
-    "minimum": 60,                         // Configure minimum delay before entering giveaway.
-    "maximum": 120                         // Configure maximum delay before entering giveaway.
+    "minimum": 60,                         // Configure minimum delay (in seconds) before entering giveaway.
+    "maximum": 120                         // Configure maximum delay (in seconds) before entering giveaway.
   },
 
   "snipe_on_main": true,                   // Enable(true) or Disable(false) sniping on the main account or not.
