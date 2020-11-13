@@ -40,8 +40,7 @@ Edit `settings.json`
   "nitro_max": 2,                          // Maximum Nitro code redeems allowed before cooldown
   "cooldown": 24,                          // How many hours to cooldown for.
   "giveaway_sniper": true,                 // Enable(true) or Disable(false) giveaway sniping or not.
-  
-  
+
   "giveaway_delay": {
     "minimum": 60,                         // Configure minimum delay before entering giveaway.
     "maximum": 120                         // Configure maximum delay before entering giveaway.
@@ -61,7 +60,7 @@ Edit `tokens.txt`
 ```
 NDI4Mjc31DExNzZyNTQ1NTQ2.X // Token #1
 NzYxORQyMDkwNtU1NjA1PDEz.X // Token #2
-NzYxODF1OikyNDEyOTE1NzKz.X // Token #2 - Add as many as you want
+NzYxODF1OikyNDEyOTE1NzKz.X // Token #2 - Add as many or as little as you want
 ```
 ***
 ### How to obtain your token
