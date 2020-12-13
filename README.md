@@ -1,7 +1,7 @@
 # Nitro.Self V3
 [![GitHub release](https://img.shields.io/github/v/release/noto-rious/Nitro.Self-V3?style=plastic)](https://github.com/noto-rious/Nitro.Self-V3/releases) [![GitHub All Releases](https://img.shields.io/github/downloads/noto-rious/Nitro.Self-V3/total?style=plastic)](https://github.com/noto-rious/Nitro.Self-V3/releases)  
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/U7U12WN8B)  
-[![buy me a coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://www.buymeacoffee.com/noto)
+[![buy me a coffee](coffee.png)](https://www.buymeacoffee.com/noto)
 
 Multi-Account Discord Nitro sniper and Giveaway joiner written in Go 1.15.6.
 
