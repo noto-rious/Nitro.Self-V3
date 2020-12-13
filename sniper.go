@@ -73,6 +73,7 @@ var (
 	himagenta         = color.New(color.FgHiMagenta)
 	green             = color.New(color.FgGreen)
 	higreen           = color.New(color.FgHiGreen)
+	nitroGREEN        = color.New(color.BgGreen).Add(color.FgHiYellow).Add(color.Bold)
 	yellow            = color.New(color.FgYellow)
 	hiyellow          = color.New(color.FgHiYellow)
 	red               = color.New(color.FgRed)
@@ -208,7 +209,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.2.8"
+	appversion = "v3.2.9"
 	
 	if _, err := os.Stat("tokens.txt"); err == nil {
 		Tokens, err = readLines("tokens.txt")
@@ -306,6 +307,30 @@ func timerEnd() {
 	_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 	_, _ = higreen.Print("Starting Nitro sniping")
 }
+func Format(n int64) string {
+    in := strconv.FormatInt(n, 10)
+    numOfDigits := len(in)
+    if n < 0 {
+        numOfDigits-- // First character is the - sign (not a digit)
+    }
+    numOfCommas := (numOfDigits - 1) / 3
+
+    out := make([]byte, len(in)+numOfCommas)
+    if n < 0 {
+        in, out[0] = in[1:], '-'
+    }
+
+    for i, j, k := len(in)-1, len(out)-1, 0; ; i, j = i-1, j-1 {
+        out[j] = in[i]
+        if i == 0 {
+            return string(out)
+        }
+        if k++; k == 3 {
+            j, k = j-1, 0
+            out[j] = ','
+        }
+    }
+}
 func loadSniper(wg *sync.WaitGroup, str string, id int) {
 
 	dg, err := discordgo.New(str)
@@ -344,7 +369,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.8░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.9░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -353,15 +378,15 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 		checkUpdate()
 		himagenta.Print(t.Format("15:04:05 "))
 		hicyan.Print("Sniping Discord Nitro Codes and Giveaways on ")
-		hiyellow.Print(strconv.Itoa(GuildCount))
+		hiyellow.Print(Format(int64(GuildCount)))
 		hicyan.Print(" Servers with ")
-		hiyellow.Print(strconv.Itoa(intCnt))
+		hiyellow.Print(Format(int64(intCnt)))
 		hicyan.Println(" Accounts 🔫")
 
 		if SaveCache != false {
 			himagenta.Print(t.Format("15:04:05 "))
 			hicyan.Print("Anti-duplicate code cache has been loaded; I will ignore ")
-			hiyellow.Print(strconv.Itoa(cCnt))
+			hiyellow.Print(Format(int64(cCnt)))
 			hicyan.Println(" codes.")
 		}
 
@@ -370,7 +395,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 		_, _ = hicyan.Print("If we're lucky, you'll get Nitro on ")
 		_, _ = hiyellow.Print(UserID)
 		_, _ = hicyan.Println(".")
-
+		//_, _ = nitroGREEN.Print("[+] BOOYOW!!! You just got Nitro!!!")
 		//UserN[id] = dg.State.User.String()
 	}
 	if str == Token && SnipeOnMain == false {
@@ -540,7 +565,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			_, _ = higreen.Print(code[2])
 			_, _ = higreen.Println("...")
 
-			payload := map[string]interface{}{"channel_id": m.ChannelID, "payment_source_id": 0}
+			payload := map[string]interface{}{"channel_id": nil, "payment_source_id": nil}
 			byts, _ := json.Marshal(payload)
 
 			startT = time.Now()
@@ -580,7 +605,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Already redeemed: **"+code[2]+"**\nDelay: **"+endT.String()+"**", true, false, s.State.User.String(), channel, m.Author, guild)
 
 			} else if strings.Contains(bodyString, "nitro") {
-				_, _ = higreen.Print("[+] BOOYOW!!! You just got Nitro!!!")
+				_, _ = nitroGREEN.Print("[+] 🎉BOOYOW!!! You just got Nitro!!!🥳")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Println(endT)
@@ -707,9 +732,9 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 					_, _ = hiyellow.Print("[" + guild.Name + " > " + channel.Name + " > ")
 					_, _ = himagenta.Print(m.Author.String())
 					_, _ = hiyellow.Println("]")
-					_, _ = higreen.Print("WINNER WINNER, CHICKEN DINNER!!! You won the ")
+					_, _ = nitroGREEN.Print("🎉WINNER WINNER, CHICKEN DINNER!!! You won the ")
 					_, _ = hicyan.Print(won[1])
-					_, _ = higreen.Println(" giveaway!!!")
+					_, _ = higreen.Println(" giveaway!!!🥳")
 					isPrinting = false
 					sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Prize: **"+won[1]+"**", false, true, s.State.User.String(), channel, m.Author, guild)
 				}
@@ -726,9 +751,9 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = hiyellow.Print("[" + guild.Name + " > " + channel.Name + " > ")
 				_, _ = himagenta.Print(m.Author.String())
 				_, _ = hiyellow.Println("]")
-				_, _ = higreen.Print("WINNER WINNER, CHICKEN DINNER!!! You won the ")
+				_, _ = nitroGREEN.Print("🎉WINNER WINNER, CHICKEN DINNER!!! You won the ")
 				_, _ = hicyan.Print(won[1])
-				_, _ = higreen.Println(" giveaway!!!")
+				_, _ = higreen.Println(" giveaway!!!🥳")
 				isPrinting = false
 				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Prize: **"+won[1]+"**", false, true, s.State.User.String(), channel, m.Author, guild)
 			} else {
