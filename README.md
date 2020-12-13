@@ -26,7 +26,7 @@ If you need any help or have any suggestions you can chekout my main profile for
 
 ### Download & Build with Go
 ```
- go get github.com/noto-rious/Nitro.Self-V3
+ go get gopkg.in/noto-rious/Nitro.Self-V3.v3
  go mod download
  go build
  ./Nitro.Self-V3
