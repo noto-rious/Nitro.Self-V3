@@ -64,11 +64,13 @@ var (
 	GiveawayMinDelay   float64
 	//GiveawayMaxDelay is the minimum time in which an account will wait before joining a giveaway.
 	GiveawayMaxDelay   float64
+	paymentSourceID    string
 
 	re                = regexp.MustCompile("(discord.com/gifts/|discordapp.com/gifts/|discord.gift/)([a-zA-Z0-9]+)")
 	_                 = regexp.MustCompile("https://privnote.com/.*")
 	reGiveaway        = regexp.MustCompile("You won the \\*\\*(.*)\\*\\*")
 	reGiveawayMessage = regexp.MustCompile("<https://discordapp.com/channels/(.*)/(.*)/(.*)>")
+	rePaymentSourceID = regexp.MustCompile(`("id": ")([0-9]+)"`)
 	magenta           = color.New(color.FgMagenta)
 	himagenta         = color.New(color.FgHiMagenta)
 	green             = color.New(color.FgGreen)
@@ -103,6 +105,32 @@ var (
 //Thread is a structure for threads, lol.
 type Thread struct {
 	i int
+}
+
+func getPaymentSourceID() {
+	var strRequestURI = []byte("https://discord.com/api/v8/users/@me/billing/payment-sources")
+	req := fasthttp.AcquireRequest()
+	req.Header.Set("authorization", Token)
+	req.Header.SetMethodBytes([]byte("GET"))
+	req.SetRequestURIBytes(strRequestURI)
+	res := fasthttp.AcquireResponse()
+
+	if err := fasthttp.Do(req, res); err != nil {
+		panic("handle error")
+	}
+
+	fasthttp.ReleaseRequest(req)
+
+	body := res.Body()
+
+	id := rePaymentSourceID.FindStringSubmatch(string(body))
+
+	if id == nil {
+		paymentSourceID = ""
+	}
+	if len(id) > 1 {
+		paymentSourceID = id[2]
+	}
 }
 
 func printWait() {
@@ -209,7 +237,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.2.9"
+	appversion = "v3.3.0"
 	
 	if _, err := os.Stat("tokens.txt"); err == nil {
 		Tokens, err = readLines("tokens.txt")
@@ -307,6 +335,8 @@ func timerEnd() {
 	_, _ = himagenta.Print(time.Now().Format("15:04:05 "))
 	_, _ = higreen.Print("Starting Nitro sniping")
 }
+
+//Format formats numbers with comas. 
 func Format(n int64) string {
     in := strconv.FormatInt(n, 10)
     numOfDigits := len(in)
@@ -354,7 +384,6 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 	t := time.Now()
 
 	if str == Token && SnipeOnMain == false {
-			fmt.Print("i have aids")
 			dg.Logout()
 			dg.Close()
 	} else {
@@ -369,13 +398,14 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.2.9░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.3.0░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
                                             ░                                  
 	`)
 		checkUpdate()
+		getPaymentSourceID()
 		himagenta.Print(t.Format("15:04:05 "))
 		hicyan.Print("Sniping Discord Nitro Codes and Giveaways on ")
 		hiyellow.Print(Format(int64(GuildCount)))
@@ -565,7 +595,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			_, _ = higreen.Print(code[2])
 			_, _ = higreen.Println("...")
 
-			payload := map[string]interface{}{"channel_id": nil, "payment_source_id": nil}
+			payload := map[string]interface{}{"channel_id": m.ChannelID, "payment_source_id": paymentSourceID}
 			byts, _ := json.Marshal(payload)
 
 			startT = time.Now()
