@@ -126,7 +126,7 @@ func getPaymentSourceID() {
 	id := rePaymentSourceID.FindStringSubmatch(string(body))
 
 	if id == nil {
-		paymentSourceID = ""
+		paymentSourceID = "null"
 	}
 	if len(id) > 1 {
 		paymentSourceID = id[2]
@@ -237,7 +237,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.3.0"
+	appversion = "v3.3.1"
 	
 	if _, err := os.Stat("tokens.txt"); err == nil {
 		Tokens, err = readLines("tokens.txt")
@@ -398,7 +398,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.3.0░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.3.1░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -595,19 +595,16 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			_, _ = higreen.Print(code[2])
 			_, _ = higreen.Println("...")
 
-			payload := map[string]interface{}{"channel_id": m.ChannelID, "payment_source_id": paymentSourceID}
-			byts, _ := json.Marshal(payload)
-
 			startT = time.Now()
 			var strRequestURI = []byte("https://discordapp.com/api/v8/entitlements/gift-codes/" + code[2] + "/redeem")
 			req := fasthttp.AcquireRequest()
 			req.Header.SetContentType("application/json")
-			req.Header.Set("Authorization", Token)
-			req.Header.SetUserAgent("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/0.0.308 Chrome/78.0.3904.130 Electron/7.3.2 Safari/537.36")
-			req.SetBody(byts)
-			req.Header.SetMethodBytes(strPost)
+			req.Header.Set("authorization", Token)
+			req.SetBody([]byte(`{"channel_id":` + m.ChannelID + `,"payment_source_id": ` + paymentSourceID + `}`))
+			req.Header.SetMethodBytes([]byte("POST"))
 			req.SetRequestURIBytes(strRequestURI)
 			res := fasthttp.AcquireResponse()
+
 			//endT = time.Since(startT)
 
 			if err := fasthttp.Do(req, res); err != nil {
