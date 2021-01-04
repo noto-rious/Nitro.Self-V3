@@ -237,7 +237,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.3.1"
+	appversion = "v3.3.2"
 	
 	if _, err := os.Stat("tokens.txt"); err == nil {
 		Tokens, err = readLines("tokens.txt")
@@ -398,7 +398,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.3.1░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.3.2░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -619,7 +619,7 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			fasthttp.ReleaseResponse(res)
 
 			if strings.Contains(bodyString, "Payment source required to redeem gift.") {
-				_, _ = hired.Print("[x] Your main account requires a payment source!")
+				_, _ = hired.Print("[x] Non-redeemable promo code! (https://microsoft.com/redeem)")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Println(endT)
