@@ -625,11 +625,11 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 				_, _ = hiyellow.Println(endT)
 				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Your main account needs a payment source.", true, false, s.State.User.String(), channel, m.Author, guild)
 			} else if strings.Contains(bodyString, "New subscription required to redeem gift.") {
-				_, _ = hired.Print("[x] Gift can not be redeemed if you already have Nitro!")
+				_, _ = hired.Print("[x] This gift type can not be redeemed if you already have Nitro!")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Println(endT)
-				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Gift can not be redeemed if you already have Nitro!", true, false, s.State.User.String(), channel, m.Author, guild)
+				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "This gift type can not be redeemed if you already have Nitro!", true, false, s.State.User.String(), channel, m.Author, guild)
 			} else if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") || strings.Contains(bodyString, "Missing Access") {
 				_, _ = hiyellow.Print("[-] Code has already been redeemed.")
 				_, _ = fmt.Print(" - ")
