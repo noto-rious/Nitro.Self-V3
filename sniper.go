@@ -237,7 +237,7 @@ func isLower(s string) bool {
 }
 func init() {
 	ClearCLI()
-	appversion = "v3.3.2"
+	appversion = "v3.3.3"
 	
 	if _, err := os.Stat("tokens.txt"); err == nil {
 		Tokens, err = readLines("tokens.txt")
@@ -398,7 +398,7 @@ func loadSniper(wg *sync.WaitGroup, str string, id int) {
 ▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒     ░ ▓██▄   ▒███   ▒██░    ▒████ ░ 
 ▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░       ▒   ██▒▒▓█  ▄ ▒██░    ░▓█▒  ░ 
 ▒██░   ▓██░░██░  ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ██▓ ▒██████▒▒░▒████▒░██████▒░▒█░    
-░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.3.2░    
+░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ▒▓▒ ▒ ▒▓▒ ▒ ░░░ ▒░ ░░ ▒░▓v3.3.3░    
 ░ ░░   ░ ▒░ ▒ ░    ░      ░▒ ░ ▒░  ░ ▒ ▒░  ░▒  ░ ░▒  ░ ░ ░ ░  ░░ ░ ▒  ░ ░      
    ░   ░ ░  ▒ ░  ░        ░░   ░ ░ ░ ░ ▒   ░   ░  ░  ░     ░     ░ ░    ░ ░    
          ░  ░              ░         ░ ░    ░        ░     ░  ░    ░  ░        
@@ -619,11 +619,17 @@ func (e *Thread) MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate)
 			fasthttp.ReleaseResponse(res)
 
 			if strings.Contains(bodyString, "Payment source required to redeem gift.") {
-				_, _ = hired.Print("[x] Non-redeemable promo code! (https://microsoft.com/redeem)")
+				_, _ = hired.Print("[x] Your main account requires a payment source!")
 				_, _ = fmt.Print(" - ")
 				_, _ = hiyellow.Print("Delay: ")
 				_, _ = hiyellow.Println(endT)
 				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Your main account needs a payment source.", true, false, s.State.User.String(), channel, m.Author, guild)
+			} else if strings.Contains(bodyString, "New subscription required to redeem gift.") {
+				_, _ = hired.Print("[x] Gift can not be redeemed if you already have Nitro!")
+				_, _ = fmt.Print(" - ")
+				_, _ = hiyellow.Print("Delay: ")
+				_, _ = hiyellow.Println(endT)
+				sWebhook(webHURL, "Notorious", "https://cdn.discordapp.com/emojis/766882337312604210.png?v=1", "Gift can not be redeemed if you already have Nitro!", true, false, s.State.User.String(), channel, m.Author, guild)
 			} else if strings.Contains(bodyString, "This gift has been redeemed already.") || strings.Contains(bodyString, "Already purchased") || strings.Contains(bodyString, "Missing Access") {
 				_, _ = hiyellow.Print("[-] Code has already been redeemed.")
 				_, _ = fmt.Print(" - ")
